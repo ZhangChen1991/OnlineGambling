@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Libraries and session info | Winning and losing in online gambling</title>
+  <meta name="description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Libraries and session info | Winning and losing in online gambling" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Libraries and session info | Winning and losing in online gambling" />
+  
+  <meta name="twitter:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
+  
+
+<meta name="author" content="Zhang Chen" />
+
+
+<meta name="date" content="2021-05-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="process-data.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Resources</a></li>
+<li class="chapter" data-level="2" data-path="libraries-and-session-info.html"><a href="libraries-and-session-info.html"><i class="fa fa-check"></i><b>2</b> Libraries and session info</a></li>
+<li class="chapter" data-level="3" data-path="process-data.html"><a href="process-data.html"><i class="fa fa-check"></i><b>3</b> Process data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="process-data.html"><a href="process-data.html#player-and-play-behavior"><i class="fa fa-check"></i><b>3.1</b> Player and play behavior</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="process-data.html"><a href="process-data.html#descriptive_data.csv"><i class="fa fa-check"></i><b>3.1.1</b> descriptive_data.csv</a></li>
+<li class="chapter" data-level="3.1.2" data-path="process-data.html"><a href="process-data.html#sessions_count.csv"><i class="fa fa-check"></i><b>3.1.2</b> sessions_count.csv</a></li>
+<li class="chapter" data-level="3.1.3" data-path="process-data.html"><a href="process-data.html#bet_counts.csv"><i class="fa fa-check"></i><b>3.1.3</b> bet_counts.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="process-data.html"><a href="process-data.html#stop"><i class="fa fa-check"></i><b>3.2</b> Stop</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="process-data.html"><a href="process-data.html#stop.csv"><i class="fa fa-check"></i><b>3.2.1</b> stop.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="process-data.html"><a href="process-data.html#stake-change"><i class="fa fa-check"></i><b>3.3</b> Stake change</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="process-data.html"><a href="process-data.html#stake_change.csv"><i class="fa fa-check"></i><b>3.3.1</b> stake_change.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="process-data.html"><a href="process-data.html#speed-of-play"><i class="fa fa-check"></i><b>3.4</b> Speed of play</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="process-data.html"><a href="process-data.html#rt.csv"><i class="fa fa-check"></i><b>3.4.1</b> rt.csv</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="descriptives.html"><a href="descriptives.html"><i class="fa fa-check"></i><b>4</b> Descriptives</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="descriptives.html"><a href="descriptives.html#player-characteristics"><i class="fa fa-check"></i><b>4.1</b> Player characteristics</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="descriptives.html"><a href="descriptives.html#age-gender-and-income."><i class="fa fa-check"></i><b>4.1.1</b> Age, gender and income.</a></li>
+<li class="chapter" data-level="4.1.2" data-path="descriptives.html"><a href="descriptives.html#risk-levels"><i class="fa fa-check"></i><b>4.1.2</b> Risk levels</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="descriptives.html"><a href="descriptives.html#play-behavior-characteristics"><i class="fa fa-check"></i><b>4.2</b> Play behavior characteristics</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="descriptives.html"><a href="descriptives.html#number-of-sessions-and-rounds"><i class="fa fa-check"></i><b>4.2.1</b> Number of sessions and rounds</a></li>
+<li class="chapter" data-level="4.2.2" data-path="descriptives.html"><a href="descriptives.html#bet-sizes"><i class="fa fa-check"></i><b>4.2.2</b> Bet sizes</a></li>
+<li class="chapter" data-level="4.2.3" data-path="descriptives.html"><a href="descriptives.html#wins"><i class="fa fa-check"></i><b>4.2.3</b> Wins</a></li>
+<li class="chapter" data-level="4.2.4" data-path="descriptives.html"><a href="descriptives.html#losses"><i class="fa fa-check"></i><b>4.2.4</b> Losses</a></li>
+<li class="chapter" data-level="4.2.5" data-path="descriptives.html"><a href="descriptives.html#total-spent"><i class="fa fa-check"></i><b>4.2.5</b> Total spent</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="descriptives.html"><a href="descriptives.html#all-in-one-table"><i class="fa fa-check"></i><b>4.3</b> All in one table</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="when-to-stop.html"><a href="when-to-stop.html"><i class="fa fa-check"></i><b>5</b> When to stop</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="when-to-stop.html"><a href="when-to-stop.html#plot"><i class="fa fa-check"></i><b>5.1</b> Plot</a></li>
+<li class="chapter" data-level="5.2" data-path="when-to-stop.html"><a href="when-to-stop.html#anova"><i class="fa fa-check"></i><b>5.2</b> ANOVA</a></li>
+<li class="chapter" data-level="5.3" data-path="when-to-stop.html"><a href="when-to-stop.html#pairwise-comparisons"><i class="fa fa-check"></i><b>5.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="change-in-stake.html"><a href="change-in-stake.html"><i class="fa fa-check"></i><b>6</b> Change in stake</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="change-in-stake.html"><a href="change-in-stake.html#plot-1"><i class="fa fa-check"></i><b>6.1</b> Plot</a></li>
+<li class="chapter" data-level="6.2" data-path="change-in-stake.html"><a href="change-in-stake.html#anovas"><i class="fa fa-check"></i><b>6.2</b> ANOVAs</a></li>
+<li class="chapter" data-level="6.3" data-path="change-in-stake.html"><a href="change-in-stake.html#pairwise-comparisons-1"><i class="fa fa-check"></i><b>6.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html"><i class="fa fa-check"></i><b>7</b> Speed of play</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#plot-2"><i class="fa fa-check"></i><b>7.1</b> Plot</a></li>
+<li class="chapter" data-level="7.2" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#anovas-1"><i class="fa fa-check"></i><b>7.2</b> ANOVAs</a></li>
+<li class="chapter" data-level="7.3" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#pairwise-comparisons-2"><i class="fa fa-check"></i><b>7.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="trial-counts.html"><a href="trial-counts.html"><i class="fa fa-check"></i><b>8</b> Trial counts</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Winning and losing in online gambling</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="libraries-and-session-info" class="section level1" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Libraries and session info</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="libraries-and-session-info.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-2"><a href="libraries-and-session-info.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bookdown)</span>
+<span id="cb1-3"><a href="libraries-and-session-info.html#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(VennDiagram) </span>
+<span id="cb1-4"><a href="libraries-and-session-info.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rmisc)</span>
+<span id="cb1-5"><a href="libraries-and-session-info.html#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="libraries-and-session-info.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-7"><a href="libraries-and-session-info.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb1-8"><a href="libraries-and-session-info.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-9"><a href="libraries-and-session-info.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(BayesFactor)</span>
+<span id="cb1-10"><a href="libraries-and-session-info.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(afex)</span>
+<span id="cb1-11"><a href="libraries-and-session-info.html#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="libraries-and-session-info.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;function/TES.R&quot;</span>)</span>
+<span id="cb1-13"><a href="libraries-and-session-info.html#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="libraries-and-session-info.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># automatically create a bib database for R packages</span></span>
+<span id="cb1-15"><a href="libraries-and-session-info.html#cb1-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">write_bib</span>(<span class="fu">c</span>(</span>
+<span id="cb1-16"><a href="libraries-and-session-info.html#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">.packages</span>(), <span class="st">&#39;bookdown&#39;</span>, <span class="st">&#39;knitr&#39;</span>, <span class="st">&#39;rmarkdown&#39;</span></span>
+<span id="cb1-17"><a href="libraries-and-session-info.html#cb1-17" aria-hidden="true" tabindex="-1"></a>), <span class="st">&#39;packages.bib&#39;</span>)</span>
+<span id="cb1-18"><a href="libraries-and-session-info.html#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="libraries-and-session-info.html#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># check if figure folder exists, if not, create a new one</span></span>
+<span id="cb1-20"><a href="libraries-and-session-info.html#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="st">&quot;figure&quot;</span>)){</span>
+<span id="cb1-21"><a href="libraries-and-session-info.html#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dir.create</span>(<span class="st">&quot;figure&quot;</span>)</span>
+<span id="cb1-22"><a href="libraries-and-session-info.html#cb1-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-23"><a href="libraries-and-session-info.html#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="libraries-and-session-info.html#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppress summarise info</span></span>
+<span id="cb1-25"><a href="libraries-and-session-info.html#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">dplyr.summarise.inform =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-26"><a href="libraries-and-session-info.html#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="libraries-and-session-info.html#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># set the theme to theme_bw for all ggplot2 figures</span></span>
+<span id="cb1-28"><a href="libraries-and-session-info.html#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
+<span id="cb1-29"><a href="libraries-and-session-info.html#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="libraries-and-session-info.html#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># use colorblind friendly colors</span></span>
+<span id="cb1-31"><a href="libraries-and-session-info.html#cb1-31" aria-hidden="true" tabindex="-1"></a>color_values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;#56B4E9&quot;</span>, <span class="st">&quot;#E69F00&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="libraries-and-session-info.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.0.4 (2021-02-15)
+## Platform: x86_64-apple-darwin17.0 (64-bit)
+## Running under: macOS Big Sur 10.16
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## attached base packages:
+## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+## [8] base     
+## 
+## other attached packages:
+##  [1] afex_0.27-2            lme4_1.1-26            BayesFactor_0.9.12-4.2
+##  [4] Matrix_1.3-2           coda_0.19-4            kableExtra_1.2.1      
+##  [7] ggpubr_0.4.0           forcats_0.5.1          stringr_1.4.0         
+## [10] dplyr_1.0.5            purrr_0.3.4            readr_1.4.0           
+## [13] tidyr_1.1.3            tibble_3.1.0           ggplot2_3.3.3         
+## [16] tidyverse_1.3.0        Rmisc_1.5              plyr_1.8.6            
+## [19] lattice_0.20-41        VennDiagram_1.6.20     futile.logger_1.4.3   
+## [22] bookdown_0.21          knitr_1.31            
+## 
+## loaded via a namespace (and not attached):
+##  [1] TH.data_1.0-10       minqa_1.2.4          colorspace_2.0-0    
+##  [4] ggsignif_0.6.0       ellipsis_0.3.1       rio_0.5.16          
+##  [7] estimability_1.3     fs_1.5.0             rstudioapi_0.13     
+## [10] MatrixModels_0.4-1   fansi_0.4.2          mvtnorm_1.1-1       
+## [13] lubridate_1.7.10     xml2_1.3.2           codetools_0.2-18    
+## [16] splines_4.0.4        jsonlite_1.7.2       nloptr_1.2.2.2      
+## [19] broom_0.7.5          dbplyr_2.1.0         compiler_4.0.4      
+## [22] httr_1.4.2           emmeans_1.5.4        backports_1.2.1     
+## [25] assertthat_0.2.1     cli_2.3.1            formatR_1.7         
+## [28] htmltools_0.5.1.1    tools_4.0.4          lmerTest_3.1-3      
+## [31] gtable_0.3.0         glue_1.4.2           reshape2_1.4.4      
+## [34] Rcpp_1.0.6           carData_3.0-4        cellranger_1.1.0    
+## [37] jquerylib_0.1.3      vctrs_0.3.6          nlme_3.1-152        
+## [40] xfun_0.21            openxlsx_4.2.2       rvest_1.0.0         
+## [43] lifecycle_1.0.0      gtools_3.8.2         statmod_1.4.35      
+## [46] rstatix_0.6.0        zoo_1.8-9            MASS_7.3-53         
+## [49] scales_1.1.1         hms_1.0.0            parallel_4.0.4      
+## [52] sandwich_3.0-0       lambda.r_1.2.4       yaml_2.2.1          
+## [55] curl_4.3             pbapply_1.4-3        sass_0.3.1          
+## [58] stringi_1.5.3        boot_1.3-26          zip_2.1.1           
+## [61] rlang_0.4.10         pkgconfig_2.0.3      evaluate_0.14       
+## [64] tidyselect_1.1.0     magrittr_2.0.1       R6_2.5.0            
+## [67] generics_0.1.0       multcomp_1.4-14      DBI_1.1.1           
+## [70] pillar_1.5.1         haven_2.3.1          foreign_0.8-81      
+## [73] withr_2.4.1          survival_3.2-7       abind_1.4-5         
+## [76] modelr_0.1.8         crayon_1.4.1         car_3.0-9           
+## [79] futile.options_1.0.1 utf8_1.1.4           rmarkdown_2.7       
+## [82] readxl_1.3.1         data.table_1.13.0    reprex_1.0.0        
+## [85] digest_0.6.27        webshot_0.5.2        xtable_1.8-4        
+## [88] numDeriv_2016.8-1.1  munsell_0.5.0        viridisLite_0.3.0   
+## [91] bslib_0.2.4</code></pre>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="process-data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null
+});
+});
+</script>
+
+</body>
+
+</html>

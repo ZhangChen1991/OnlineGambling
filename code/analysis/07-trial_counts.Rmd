@@ -1,0 +1,127 @@
+# Trial counts
+
+Here we count the number of players and rounds included in each analysis, and present the counts in one table.
+
+```{r trial count, results="asis"}
+# load data
+stop <- read_csv("../../data/processed/stop.csv")
+
+# players need to have at least 10 rounds
+# in order to be included in the analysis
+players_exclude <- stop %>% 
+  filter(
+    round_pos == "overall",
+    total_count < 10
+  ) %>%
+  .$id_player %>% unique
+
+stop <- stop %>% filter(!id_player %in% players_exclude)
+
+# calculate the remaining number of players and rounds
+stop_count <- stop %>%
+  filter(round_pos == "overall") %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+remove(stop)
+
+# change in stake
+stake_change <- read_csv("../../data/processed/stake_change.csv")
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- stake_change %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = stake_change_prop
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+stake_change <- filter(stake_change, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+stake_count <- stake_change %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+
+remove(stake_change)
+
+# speed of play
+rt <- read_csv("../../data/processed/rt.csv")
+
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- rt %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = rt_mean
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+rt <- filter(rt, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+rt_count <- rt %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+remove(rt)
+
+# combine all counts and do some formatting
+count <- 
+  bind_rows(
+    stop_count,
+    stake_count,
+    rt_count
+  ) %>%
+  mutate(
+    Analysis = rep(c("When to stop", "Change in stake", "Speed of play"), each = 2),
+    Group = group,
+    Mean = round(Mean, digits = 1),
+    SD = round(SD, digits = 1)
+  ) %>%
+  select(Analysis, Group, Player, Total, Mean, SD, Min, Max)
+
+# show the table
+kable(count, 
+      caption = "Number of players and rounds included in each analysis",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down")
+
+
+# kable(count, "latex",
+#       caption = "Number of players and rounds included in each analysis",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```

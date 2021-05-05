@@ -1,0 +1,2138 @@
+--- 
+title: "Winning and losing in online gambling"
+author: ""
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook."
+---
+
+# Resources
+
+```{r resources, include=FALSE}
+library(knitr)
+
+# set global chunk options
+opts_chunk$set(warning=FALSE,
+               message=FALSE)
+```
+
+<!--chapter:end:index.Rmd-->
+
+# Libraries and session info
+
+
+```{r load-libraries, message=FALSE}
+library(knitr)
+library(bookdown)
+library(VennDiagram) 
+library(Rmisc)
+
+library(tidyverse)
+library(ggpubr)
+library(kableExtra)
+library(BayesFactor)
+library(afex)
+
+source("function/TES.R")
+
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+
+# check if figure folder exists, if not, create a new one
+if(!dir.exists("figure")){
+  dir.create("figure")
+}
+
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+
+# set the theme to theme_bw for all ggplot2 figures
+theme_set(theme_bw())
+
+# use colorblind friendly colors
+color_values <- c("#56B4E9", "#E69F00")
+```
+
+
+```{r session-info}
+sessionInfo()
+```
+
+
+<!--chapter:end:01-settings.Rmd-->
+
+# Process data
+
+The raw data on the individual game level cannot be shared as they are proprietary. We nevertheless provide the code that we used to process the raw data to get processed player-level data. The processed (summary) data are publicly shared (in the `data/processed` folder) and can be used to reproduce the results that we report in the paper.
+
+
+```{r load-raw-data}
+# load data
+load("../../data/processed/d_low_risk.RData")
+load("../../data/processed/d_high_risk.RData")
+
+# clean and combine data
+d_low_risk <- d_low_risk %>%
+  mutate(
+    # add group name,
+    group = "Low-Risk",
+    # low-risk players each has a risk level of 0
+    level = 0,
+    # add "LR" (low-risk) to the player id
+    id_player = str_c("LR", id_player, sep = "_")
+  ) %>%
+  select(group, level, everything())
+
+d_high_risk <- d_high_risk %>%
+  mutate(
+    # add group name,
+    group = "High-Risk",
+    # add "HR" (high-risk) to the player id
+    id_player = str_c("HR", id_player, sep = "_")
+  ) %>%
+  select(group, level, everything())
+
+# combine data from both groups
+d <- rbind(d_high_risk, d_low_risk)
+
+# remove the original two data frames
+remove(d_high_risk)
+remove(d_low_risk)
+```
+
+## Player and play behavior
+
+### descriptive_data.csv
+
+First, we process the data to get descriptive data on the players and their general play behaviors.
+
+The `descriptive_data.csv` file contains the following variables.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* age: age of a player.
+* gender: gender of a player, Female or Male.
+* income: annual income of a player, in euro. Players without income information are denoted NA.
+* risk_0: whether the player receives a risk level of 0 in the data, 1 = yes, 0 = no.
+* risk_3: whether the player receives a risk level of 3 in the data, 1 = yes, 0 = no.
+* risk_4: whether the player receives a risk level of 4 in the data, 1 = yes, 0 = no.
+* risk_5: whether the player receives a risk level of 5 in the data, 1 = yes, 0 = no.
+* n_session: the total number of sessions played.
+* n_round_total: the total number of rounds played.
+* n_round_mean: the mean number of rounds played per session.
+* n_round_median: the median number of rounds played per session.
+* bet_max: the maximum bet size across all rounds, in euro.
+* bet_min: the minimum bet size across all rounds, in euro.
+* bet_mean: the mean bet size across all rounds, in euro.
+* bet_median: the median bet size across all rounds, in euro.
+* win_prob: the probability of winning (%) across all rounds.
+* win_max: the maximum amount of win on rounds when players win, in euro. Win defined as the win amount minus the stake amount.
+* win_min: the minimum amount of win on rounds when players win, in euro.
+* win_mean: the mean amount of win on rounds when players win, in euro.
+* win_median:  the median amount of win on rounds when players win, in euro.
+* loss_max: the maximum amount of loss on rounds when players lose, in euro. Loss amount equals the stake amount.
+* loss_min: the minimum amount of loss on rounds when players lose, in euro.
+* loss_mean: the mean amount of loss on rounds when players lose, in euro.
+* loss_median: the median amount of loss on rounds when players lose, in euro.
+* total_spent: the total amount of money spent (i.e., lost), in euro. A negative value indicates that players overall won money.
+
+```{r descriptive_data}
+# get the age, gender and income of each player
+age_gender <- d %>%
+  group_by(id_player) %>%
+  sample_n(1) %>%
+  mutate(gender = recode(gender, F = "Female", M = "Male")) %>%
+  select(group, id_player, age, gender, income)
+
+# get the risk level(s) of each player
+risk_level_0 <- d %>%
+  filter(level == 0) %>%
+  .$id_player %>% unique
+
+risk_level_3 <- d %>%
+  filter(level == 3) %>%
+  .$id_player %>% unique
+
+risk_level_4 <- d %>%
+  filter(level == 4) %>%
+  .$id_player %>% unique
+
+risk_level_5 <- d %>%
+  filter(level == 5) %>%
+  .$id_player %>% unique
+
+risk_levels <- age_gender %>%
+  mutate(
+    risk_0 = ifelse(id_player %in% risk_level_0, 1, 0),
+    risk_3 = ifelse(id_player %in% risk_level_3, 1, 0),
+    risk_4 = ifelse(id_player %in% risk_level_4, 1, 0),
+    risk_5 = ifelse(id_player %in% risk_level_5, 1, 0)
+  ) %>%
+  select(id_player, risk_0, risk_3, risk_4, risk_5)
+
+# count the number of sessions and rounds for each player
+rounds <- d %>%
+  # count the number of rounds in each session
+  count(id_player, id_session) %>%
+  # count for each player:
+  group_by(id_player) %>%
+  summarize(
+    n_session = n(), # the total number of sessions
+    n_round_total = sum(n), # the total number of rounds (all sessions combined)
+    n_round_mean =  mean(n), # the mean number of rounds per session
+    n_round_median = median(n) # the median number of rounds per session
+  ) %>%
+  select(id_player, n_session, n_round_total, n_round_mean, n_round_median)
+
+# for each player, calculate the max, min, mean and median of stakes across all rounds
+bets <- d %>%
+  group_by(id_player) %>%
+  summarize(
+    bet_max = max(stake),
+    bet_min = min(stake),
+    bet_mean = mean(stake),
+    bet_median = median(stake)
+  ) %>%
+  select(id_player, bet_max, bet_min, bet_mean, bet_median)
+
+# for each player, calculate their winning probability, the min, max, mean and median win amount
+win_prob <- d %>%
+  group_by(id_player) %>%
+  summarize(win_prob = mean(win > 0) * 100) %>%
+  select(id_player, win_prob)
+
+wins <- d %>%
+  # select winning rounds
+  filter(win > 0) %>%
+  # for each player, calculate the max, min, mean and median win amount
+  # the real win amount is the win amount displayed by the game, minus
+  # the stake
+  mutate(win = win - stake) %>%
+  group_by(id_player) %>%
+  summarize(
+    win_max = max(win),
+    win_min = min(win),
+    win_mean = mean(win),
+    win_median = median(win)
+  ) %>%
+  select(id_player, win_max, win_min, win_mean, win_median)
+
+# on the rounds where players lost
+# calculate their max, min, mean, median and total loss amount
+losses <- d %>%
+  # select losing rounds
+  filter(win == 0) %>%
+  # loss the same as the stake
+  mutate(loss = stake) %>%
+  group_by(id_player) %>%
+  summarize(
+    loss_max = max(loss),
+    loss_min = min(loss),
+    loss_mean = mean(loss),
+    loss_median = median(loss),
+  ) %>%
+  select(id_player, loss_max, loss_min, loss_mean, loss_median)
+
+# for each player, calculate the total spent
+total_spent <- d %>%
+  mutate(spent = stake - win) %>%
+  group_by(id_player) %>%
+  summarize(total_spent = sum(spent))
+
+# put all data frames together
+d_descriptive <- age_gender %>%
+  full_join(risk_levels, by = "id_player") %>%
+  full_join(rounds, by = "id_player") %>%
+  full_join(bets, by = "id_player") %>%
+  full_join(win_prob, by = "id_player") %>%
+  full_join(wins, by = "id_player") %>%
+  full_join(losses, by = "id_player") %>%
+  full_join(total_spent, by = "id_player")
+
+# save the data frames as a csv file
+write_csv(d_descriptive, "../../data/processed/descriptive_data.csv")
+
+# remove data frames
+remove(age_gender, risk_levels, rounds, bets, win_prob, wins, losses, total_spent, d_descriptive)
+```
+
+### sessions_count.csv
+
+To further characterize the play behavior, we count the number of rounds played in each session. For the high-risk and low-risk groups separately, we count the number of sessions that contained certain number of rounds (combined across all players in the same group). The data are saved in the `sessions_count.csv` file, which contains the following variables.
+
+* group: the group to which players belong, High-Risk or Low-Risk.
+* n_round_bin: the number of rounds per session is divided into bins. (a, b] means a certain session has > a and <= b rounds. Note that bin widths become larger for larger values.
+* n_round_label: a numeric label for each bin, from 1 till 34 (included for later plotting).
+* n_session: the number of sessions that contain certain numbers of rounds, combined across all players in the same group. E.g, for the High-Risk group, 13314 sessions fall into the (0,10] bin, meaning that for all players in the High-Risk group, 13314 sessions contain > 0 and <= 10 rounds.
+
+
+```{r sessions_count}
+# we count the number of sessions that contain certain number of rounds
+# across all players, for the high-risk and low-risk groups separately
+sessions_count <- d %>%
+  # count the number of rounds in each session
+  count(group, id_player, id_session) %>%
+  # divide the number of rounds into into bins
+  mutate(
+    n_round_bin = cut(n, breaks = c((0:20)*10, (3:10)*100, (2:7)*1000)),
+    n_round_label = cut(n, breaks = c((0:20)*10, (3:10)*100, (2:7)*1000), labels = 1:34)
+  ) %>%
+  # calculate the number of sessions with certain numbers of rounds
+  count(group, n_round_bin, n_round_label, name = "n_session") %>%
+  mutate(n_round_label = as.numeric(n_round_label)) 
+
+# save the data frame as a csv file
+write_csv(sessions_count, "../../data/processed/sessions_count.csv")
+
+# remove data frame(s)
+remove(sessions_count)
+```
+
+### bet_counts.csv
+
+On each round, players can choose one of ten different bet sizes (from 0.25 euro to 20 euro). To characterize the betting patterns, for each player we count the number of rounds where they chose a certain bet size. The data are saved in the `bet_counts.csv` file, which contains the following variables.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* stake: the amount of money a player bets on a round, from 0.25 till 20, in euro.
+* n_round: the number of rounds where a player chose a certain bet size.
+* n_round_total: the total number of rounds played by each player.
+* prop: the relative proportion of choosing a certain bet size for each player, from 0 (%) till 100 (%).
+
+```{r bet-patterns}
+# get all the unique levels of bet sizes
+bet_sizes <- unique(d$stake)
+bet_sizes <- sort(bet_sizes, decreasing = F)
+
+# for each player, count how often each bet size is selected
+bets_count <- d %>%
+  # turn the variable stake into a factor with all ten 10 possible levels
+  mutate(stake = factor(stake, levels = bet_sizes)) %>%
+  # for each player, count the number of rounds with a certain stake size
+  count(group, id_player, stake, .drop = F, name = "n_round") %>%
+  # calculate the total number of rounds for each player
+  # and based on that, the relative proportion of choosing a certain stake size
+  group_by(group, id_player) %>%
+  mutate(
+    n_round_total = sum(n_round), # the total number of rounds
+    prop = n_round/n_round_total * 100  # the relative proportion of choosing a certain bet
+  ) %>%
+  ungroup()
+
+# save the data frame as a csv file
+write_csv(bets_count, "../../data/processed/bets_count.csv")
+
+# remove data frame(s)
+remove(bets_count)
+```
+
+
+## Stop
+
+After each round, players can choose either to continue playing, or stop. Here we prepare data on whether the decision to stop is influenced by the prior outcome (win vs. loss) or not.
+
+### stop.csv
+
+For this analysis, we calculate the probability of winning on the last round of each session, as well as the overall probability of winning with all rounds combined, for each player. The idea is that if players made the decision to stop regardless of the outcome of a game, the overall probability of winning would be the same for the last round of each session and all rounds combined. However, if players were more likely to stop after a win, the last round would contain more wins than all rounds combined; conversely, if players were more likely to stop after a loss, the last round would contain more losses (i.e., a lower winning probability) than all rounds combined. The processed data are saved in the `stop.csv` file, with the following variables.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* round_pos: whether a certain round is at the end of a session ('end') or all rounds combined ('overall').
+* total_count: the total number of rounds in each condition, either at the end of a session or all rounds combined.
+* win_count: the total number of rounds on which players won in each condition.
+* win_prob: the probability of winning in each condition, calculated based on the previous two counts, from 0 (%) to 100 (%).
+
+```{r stop}
+# calculate the overall number of rounds and the probability of winning for each player
+win_overall <- d %>%
+  mutate(outcome = ifelse(win > 0, "win", "loss")) %>%
+  group_by(group, id_player) %>%
+  summarize(
+    total_count = n(),
+    win_count = sum(outcome == "win"),
+    win_prob = win_count/total_count * 100
+  ) %>%
+  ungroup() %>%
+  mutate(round_pos = "overall") %>%
+  select(group, id_player, round_pos, total_count, win_count, win_prob)
+
+# calculate the number of rounds that occur at the end of a session
+# and the probability of winning in this subset of rounds
+win_end_session <- d %>%
+  mutate(outcome = ifelse(win > 0, "win", "loss")) %>%
+  group_by(group, id_player, id_session) %>%
+  mutate(
+    # if a certain round has the largest id in a session
+    # it means that round is the last one, and player ended the session afterwards
+    round_pos = ifelse(id_round == max(id_round), "end", "in")
+  ) %>%
+  filter(round_pos == "end") %>%
+  # for each player, calculate the number of rounds and wins at the end of each session
+  group_by(group, id_player, round_pos) %>%
+  summarize(
+    total_count = n(),
+    win_count = sum(outcome == "win"),
+    win_prob = win_count/total_count * 100
+  ) %>%
+  select(group, id_player, round_pos, total_count, win_count, win_prob)
+
+# combine the two data frames
+stop <- win_overall %>%
+  bind_rows(win_end_session) %>%
+  arrange(group, id_player)
+
+# save the data frame as a csv file
+write_csv(stop, "../../data/processed/stop.csv")
+
+# remove data frame(s)
+remove(stop, win_overall, win_end_session)
+```
+
+
+## Stake change
+
+Players can change their stakes between rounds. We explore whether the probability of changing stakes is influenced by prior outcome, and how players changed stakes when they did change stakes (again, as a function of prior outcome).
+
+### stake_change.csv
+
+Players can choose among 10 different levels of stake sizes (from 0.25 euro to 20 euro). Since we are interested in whether wins and losses may change the betting behavior, we exclude the first round of each session (i.e., these rounds have no prior outcomes). For the remaining data, we calculate the number of rounds that follow a win or a loss, and the probability of changing stakes.
+We also calculate the average change in stakes (in euro; a positive change score indicates increasing stake, while a negative change score indicates decreasing stake). Since players can only select one from ten levels of stakes, as a second measure of stake change, we transform the stake amounts into stake levels, with 1 being the lowest level of stake (0.25 euro) and 10 being the highest level of stake (20 euro). A change score is then calculated based on the levels (rather than the original amounts) of stakes. We calculate the average change in stake sizes and stake levels both for all rounds, and only on rounds where players did change stakes.
+
+The following variables are calculated and saved in the `stake_change.csv` file.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* prev_outcome: the outcome on the previous round, win (win amount > 0) or loss (win amount = 0).
+* n_round: the total number of rounds following a win or a loss.
+* n_round_change: the number of rounds where a player changed the stake.
+* stake_change_prop: the proportion of rounds where players changed the stake (%).
+* stake_change_size_overall: the average change in stake sizes in all rounds. A positive value indicates an increase in stake (euro).
+* stake_change_level_overall: the average change in stake levels in all rounds. A positive value indicates an increase in stake level.
+* stake_change_size: the average change in stake sizes when players did change the stake.
+* stake_change_level: the average change in stake levels when players did change the stake. 
+
+```{r stake_change}
+# get all the unique levels of bet sizes
+bet_sizes <- unique(d$stake)
+bet_sizes <- sort(bet_sizes, decreasing = F)
+
+stake_change <- d %>%
+  mutate(
+    prev_outcome = ifelse(prev_win > 0, "win", "loss"),
+    # create a new variable for stake level
+    stake_level = factor(stake, levels = bet_sizes),
+    stake_level = as.numeric(stake_level),
+    # create a new variable for the previous stake
+    prev_stake_level = lag(stake_level),
+    # calculate the change in stakes between two rounds
+    # a positive value indicates an increase in stake
+    stake_change_size = stake - prev_stake,
+    # do the same for the change in stake level
+    stake_change_level = stake_level - prev_stake_level
+  ) %>%
+  filter(!is.na(prev_outcome)) %>%
+  ungroup()
+
+# calculate the probability of changing stakes and the average change
+# in stake sizes and levels with all rounds
+stake_change_prop <- stake_change %>%
+  group_by(group, id_player, prev_outcome) %>%
+  summarize(
+    # the total number of rounds across all sessions
+    n_round = n(),
+    # the total number of rounds when stakes did change
+    n_round_change = sum(stake_change_size != 0),
+    # probability of changing stakes
+    stake_change_prop = mean(stake_change_size != 0) * 100,
+    # the overall change in stake sizes and levels
+    stake_change_size_overall = mean(stake_change_size),
+    stake_change_level_overall = mean(stake_change_level)
+  ) %>%
+  ungroup()
+
+# calculate the changes in stakes when players did change stakes
+stake_change_sizes <- stake_change %>%
+  # only include rounds where players did change stakes
+  filter(stake_change_size != 0) %>%
+  group_by(group, id_player, prev_outcome) %>%
+  summarize(
+    stake_change_size = mean(stake_change_size),
+    stake_change_level = mean(stake_change_level),
+  ) %>%
+  ungroup()
+
+# combine both data frames
+stake_change_combined <- stake_change_prop %>%
+  full_join(stake_change_sizes, by = c("group", "id_player", "prev_outcome"))
+
+# save the data frame as a csv file
+write_csv(stake_change_combined, "../../data/processed/stake_change.csv")
+
+remove(stake_change, stake_change_prop, stake_change_sizes, stake_change_combined)
+```
+
+## Speed of play
+
+Next we examine the speed of play, once players have decided to continue playing. For this analysis, we focus on the RT of putting in the first column as an indicator of the speed of play. For this analysis, we further exclude rounds where the RT of putting in the first column was at least 5000 milliseconds. RTs below 0 (potentially a recording error) are also excluded. 
+
+### rt.csv
+
+```{r rt-data-exclusion}
+# number of rounds before exclusion
+before <- nrow(d)
+
+d_after <- d %>%
+  # the rt1 in the data registers the duration between the end of the previous game
+  # and the moment when players put in the first column in the current game.
+  # by calculating the difference between 'rt1' and 'rt_start',
+  # we get the rt of the putting in the first column,
+  # which is between starting the current game and putting in the first column.
+  mutate(rt = rt1 - rt_start) %>%
+  filter(
+    # exclude the first round of each session
+    id_round !=1, 
+    # only keep trials where the RT of putting in the first column
+    # is between 0 and 5000 milliseconds
+    rt < 5000, rt >= 0 
+  ) 
+
+# calculate number of rounds after the exclusion
+after <- nrow(d_after)
+
+# calculate the proportion of data exclusion
+removed <- (before - after)/before * 100
+```
+
+Players in total played `r before` rounds. `r before - after` rounds were excluded after applying the exclusion criteria as listed above (`r round(removed, 1)`\% of all rounds). For the remaining rounds, we calculate the number of rounds, and the mean RTs following wins and losses respectively. Since players differed in how quickly they generally responded, to control for the potential effects of general responding speeds, we further calculate the z score of each RT within each player. The mean RT z scores are further calculated for each player. The processed data are saved in the `rt.csv` file. The following variables are included.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* prev_outcome: the outcome on the previous trial, win (win amount > 0) or loss (win amount = 0).
+* n_round: the number of remaining rounds following a win or a loss.
+* rt_mean: the mean response time (of putting in the first column) after a win or a loss, in milliseconds.
+* rt_z_mean: the mean of response time z score (of putting in the first column) after a win or a loss.
+
+```{r rt-data}
+rt_data <- d_after %>%
+  # calculate the following variables for each player
+  group_by(group, id_player) %>%
+  mutate(
+    rt_z = scale(rt),
+    prev_outcome = ifelse(prev_win > 0, "win", "loss") # the outcome of the previous round
+  ) %>%
+  # for rounds following wins and losses, calculate the total number
+  # and the mean RTs (raw scores as well as z scores)
+  group_by(group, id_player, prev_outcome) %>%
+  summarize(
+    n_round = n(), # number of rounds
+    rt_mean = mean(rt), # the mean rt 
+    rt_z_mean = mean(rt_z) # the mean rt z score
+  )
+
+# save the data frame as a csv file
+write_csv(rt_data, "../../data/processed/rt.csv")
+
+remove(d_after, rt_data, d)
+```
+
+<!--chapter:end:02-proecess_data.Rmd-->
+
+# Descriptives
+
+In this part, we provide some descriptive information of both the players and their general playing behavior in the game.
+
+```{r descriptives-load-data}
+demo <- read_csv("../../data/processed/descriptive_data.csv")
+sessions_count <- read_csv("../../data/processed/sessions_count.csv")
+bets_count <- read_csv("../../data/processed/bets_count.csv")
+```
+
+## Player characteristics
+
+### Age, gender and income.
+
+First, we calculated the number of players (males and females) and the descriptive information of age in each group (see Table \@ref(tab:demographics)). We further made an age by gender pyramid for each group (see Figure \@ref(fig:age-pyramids)).
+
+```{r demographics, results='asis'}
+# the total number of players; both groups combined
+n_total <- nrow(demo)
+
+# the number of players in the high-risk and the low-risk group
+n_HR    <- sum(demo$group == "High-Risk")
+n_LR    <- sum(demo$group == "Low-Risk")
+
+# count the number of males and females in each group
+gender_count <- demo %>%
+  count(group, gender) %>%
+  pivot_wider(id_cols = group, names_from = gender, values_from = n) %>%
+  mutate(Total = Female + Male)
+
+# calculate the descriptive information of age in each group
+age_des <- demo %>%
+  group_by(group) %>%
+  summarize(across(age, list(mean = mean, median = median, sd = sd, min = min, max = max))) %>%
+  mutate(age_mean = round(age_mean, 1), age_sd = round(age_sd, 1))
+
+# combine gender count and age descriptive
+demo_summary <- gender_count %>%
+  inner_join(age_des, by = "group")
+
+# show table
+kable(demo_summary, caption = "Demographic information",
+      booktabs = T, align = "c")
+```
+
+(ref:age-pyramids-cap) Age by gender pyramids for the high-risk and the low-risk group.
+
+```{r age-pyramids, fig.cap='(ref:age-pyramids-cap)', fig.height=6, fig.width=8}
+# age pyramids for both groups
+age_count <- demo %>%
+  mutate(
+    # in the sample age ranges from 22 to 89. 
+    # divide players into age groups from 20-90, with bin width of 5 years.
+    age_range = cut(age, breaks = seq(20, 90, 5))
+  ) %>%
+  # count the number of males and females in each age group
+  count(group, age_range, gender)
+
+age_pyramids <- ggplot(age_count, aes(age_range, n, fill=gender)) +
+  # plot bars for males
+  geom_col(data=filter(age_count, gender =="Male")) +
+  # add the counts next to the bars
+  geom_text(data=filter(age_count, gender =="Male"), aes(x=age_range, y = n, label = n), nudge_y = 20) +
+  # plot bars for females, but flip it to the other side
+  geom_col(data=filter(age_count, gender=="Female"), aes(y = n*(-1))) + 
+  # add the counts next to the bars
+  geom_text(data=filter(age_count, gender =="Female"), aes(x=age_range, y = n*(-1), label = n), nudge_y = -20) +
+  # for high-risk and low-risk group separately
+  facet_wrap(~group) +
+  # use colorblind-friendly color
+  scale_fill_manual(values = color_values) + 
+  scale_color_manual(values = color_values) + 
+  labs(x = "Age Range (years old)", y = "Number of Players", fill = "Gender") +
+  theme(legend.position = "top", legend.direction = "horizontal") + 
+  # adjust the tick labels on the y axis
+  scale_y_continuous(limits = c(-240, 240), breaks=seq(-240,240,40), labels=abs(seq(-240,240,40))) +
+  # flip the x and y axis
+  coord_flip()
+
+age_pyramids
+
+# save plots
+ggsave("figure/age_pyramid.pdf", age_pyramids, width = 8, height = 6)
+
+```
+
+
+```{r income, results="asis"}
+# compare the income between two groups
+income_HR <- demo %>%
+  filter(group == "High-Risk") %>%
+  drop_na()
+
+income_LR <- demo %>%
+  filter(group == "Low-Risk") %>%
+  drop_na()
+
+income_comp <- TES(income_HR$income, income_LR$income, paired = FALSE)
+
+income_comp <- income_comp %>%
+  mutate(comp = "Income") %>%
+  select(comp, everything())
+
+income_comp_formatted <- income_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# show the table
+kable(income_comp_formatted, 
+      caption = "Comparing the annual income between the two groups",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+
+```
+
+
+### Risk levels
+
+All players in the low-risk group have a risk level of 0. Players in the high-risk group, however, may have more than one risk level (3, 4, or 5). This is because the risk level a certain player received is determined by the amount of risk indicators they exhibited. The more risk indicators a player exhibited, the higher the risk level was. Since players' behavior can vary over time, the risk level a particular player receives can also vary. We therefore made a Venn diagram to show the number of players with each risk level(s) in the high-risk group (Figure \@ref(fig:risk-level-venn-diagram)).
+
+(ref:venn-diagram-cap) Venn diagram for the risk levels of players in the high-risk group. The overlapping regions of the circles indicate the numbers of players with corresponding two or three risk levels. The non-overlapping regions of the circles indicate the numbers of players with one risk level.
+
+```{r risk-level-venn-diagram, fig.cap = '(ref:venn-diagram-cap)', fig.align="center"}
+# get the player ids for each risk level
+risk_level_3 <- demo %>%
+  filter(risk_3 == 1) %>%
+  .$id_player %>% unique
+
+risk_level_4 <- demo %>%
+  filter(risk_4 == 1) %>%
+  .$id_player %>% unique
+
+risk_level_5 <- demo %>%
+  filter(risk_5 == 1) %>%
+  .$id_player %>% unique
+
+# draw a Venn diagram, code from https://www.r-graph-gallery.com/14-venn-diagramm.html
+
+# Chart
+VennDiagram::venn.diagram(
+  x = list(risk_level_3, risk_level_4, risk_level_5),
+  category.names = c("Level 3" , "Level 4" , "Level 5"),
+  filename = 'figure/risk_levels.png',
+  output=TRUE,
+  
+  # Output features
+  imagetype="png" ,
+  height = 480 , 
+  width = 480 , 
+  resolution = 300,
+  compression = "lzw",
+  
+  # Circles
+  lwd = 1,
+  col=c("#440154ff", '#21908dff', '#fde725ff'),
+  fill = c(alpha("#440154ff", 0.3), alpha('#21908dff', 0.3), alpha('#fde725ff', 0.3)),
+  
+  # Numbers
+  cex = .6,
+  fontface = "bold",
+  fontfamily = "sans",
+  
+  # Set names
+  cat.cex = 0.6,
+  cat.fontface = "plain",
+  cat.default.pos = "outer",
+  cat.pos = c(-27, 27, 135),
+  cat.dist = c(0.055, 0.055, 0.085),
+  cat.fontfamily = "sans",
+  rotation = 1
+)
+
+# include image in the graphics
+include_graphics('figure/risk_levels.png')
+```
+
+## Play behavior characteristics
+
+### Number of sessions and rounds
+
+To provide some descriptive information on the total numbers of sessions players played, as well as the numbers of rounds played in one session, we count the number of players with certain numbers of sessions in the data set. We also count the numbers of sessions with certain numbers of rounds (combining players from the same group). Figure \@ref(fig:counts-plot) shows the results. The majority of the players, especially those in the low-risk group, tended to play relatively few sessions (Figure \@ref(fig:counts-plot), top panel). Players in the high-risk group though did tend to play multiple sessions. Furthermore, most of the sessions tended to be relatively short (Figure \@ref(fig:counts-plot), bottom panel), but longer playing sessions also occurred, especially for the high-risk group.
+
+(ref:counts-plot-cap) Histograms of the numbers of players with certain numbers of sessions (top) and the numbers of sessions with certain numbers of rounds (bottom, combined across all players from the same group).
+
+```{r counts-plot, fig.cap='(ref:counts-plot-cap)', fig.height=7, fig.width=7}
+# count the number of players with certain number of sessions
+players_with_certain_sessions <- demo %>%
+  # divide the total number of sessions into bins
+  # note that the scale is transformed so that larger values are compressed
+  mutate(n_session_bin = cut(n_session, 
+                             breaks = c(0:10, (2:10)*10, (2:10)*100, (2:5)*1000)),
+         n_session_label = cut(n_session, 
+                             breaks = c(0:10, (2:10)*10, (2:10)*100, (2:5)*1000),
+                             labels = 1:32)
+  ) %>%
+  # count the number of players with certain numbers of sessions
+  count(group, n_session_bin, n_session_label) %>%
+  mutate(n_session_label = as.numeric(n_session_label)) 
+  
+# make a histogram for the total number of sessions
+session_hist <- ggplot(players_with_certain_sessions, aes(n_session_label, n, fill = group, color = group)) +
+  geom_bar(stat = "identity", alpha = 0.4, position = "identity") +
+  scale_x_continuous(breaks = 0:32 + 0.5, # note that +0.5 to move the bars horizontally
+                     labels = c(0:10, (2:10)*10, (2:10)*100, (2:5)*1000),
+                     limits = c(0, 34)) +
+  scale_y_continuous(breaks = (0:9) * 50,
+                     labels = (0:9) * 50,
+                     limits = c(0, 450)) +
+  labs(x = "Number of Sessions", y = "Number of Players", fill = "Group", color = "Group") +
+  # use colorblind-friendly color
+  scale_fill_manual(values = color_values) + 
+  scale_color_manual(values = color_values) + 
+  theme(legend.position = "top", legend.direction = "horizontal", 
+        panel.grid.minor = element_blank(),
+        axis.text.x=element_text(angle = -90, vjust = 0.5))
+
+# get the number of sessions with certain number of rounds
+sessions_with_certain_rounds <- sessions_count %>%
+  # divide the number of sessions in each bin by 100, for ease of plotting
+  mutate(n_session = n_session / 100)
+  
+# make a histogram for the number of rounds
+round_hist <- ggplot(sessions_with_certain_rounds, aes(n_round_label, n_session, fill = group, color = group)) +
+  geom_bar(stat = "identity", alpha = 0.4, position = "identity") +
+  scale_x_continuous(breaks = c(0:34) + 0.5,
+                     labels = c((0:20)*10, (3:10)*100, (2:7)*1000),
+                     limits = c(0, 35)) +
+  scale_y_continuous(breaks = (0:16) * 10,
+                     labels = (0:16) * 10,
+                     limits = c(0, 160)) +
+  labs(x = "Number of Rounds", y = "Number of Sessions / 100", fill = "Group", color = "Group") +
+  # use colorblind-friendly color
+  scale_fill_manual(values= color_values) + 
+  scale_color_manual(values= color_values) + 
+  theme(legend.position = "top", legend.direction = "horizontal",
+        panel.grid.minor = element_blank(),
+        axis.text.x=element_text(angle = -90, vjust = 0.5))
+
+# save two plots in one figure
+p <- ggarrange(session_hist, round_hist, ncol = 1,
+               common.legend = TRUE, legend="top")
+
+p
+
+ggsave("figure/session_round_count.pdf", p, width = 7, height = 7)
+```
+
+For each player, we calculate the total number of sessions played, the total number of rounds played, the mean number of rounds played per session, and the median number of rounds played per session. We then compare the numbers of sessions and rounds between the two groups. As can be seen from Table \@ref(tab:rounds-compare), players in the high-risk group overall played more sessions and rounds than those in the low-risk group. They also tended to have longer sessions (i.e., more rounds per session) than the low-risk group.
+
+```{r rounds-compare, results="asis"}
+# calculate the total numbers of sessions and rounds across all players
+n_session_total <- sum(demo$n_session)
+n_round_total   <- sum(demo$n_round_total)
+
+# compare the two groups
+rounds_HR <- demo %>% filter(group == "High-Risk")
+rounds_LR <- demo %>% filter(group == "Low-Risk")
+
+session_comp      <- TES(rounds_HR$n_session, rounds_LR$n_session, paired = F, conf = 0.95)
+round_total_comp  <- TES(rounds_HR$n_round_total, rounds_LR$n_round_total, paired = F, conf = 0.95)
+round_mean_comp   <- TES(rounds_HR$n_round_mean, rounds_LR$n_round_mean, paired = F, conf = 0.95)
+round_median_comp <- TES(rounds_HR$n_round_median, rounds_LR$n_round_median, paired = F, conf = 0.95)
+
+session_comp <- session_comp %>% 
+  mutate(comp = "Session number") %>%
+  select(comp, everything())
+
+round_total_comp <- round_total_comp %>% 
+  mutate(comp = "Round number") %>%
+  select(comp, everything())
+
+round_mean_comp <- round_mean_comp %>%
+  mutate(comp = "Mean round number") %>%
+  select(comp, everything())
+
+round_median_comp <- round_median_comp %>%
+  mutate(comp = "Median round number") %>%
+  select(comp, everything())
+
+# combine and format the results
+count_comp <- rbind(session_comp, round_total_comp, round_mean_comp, round_median_comp)
+
+comp_formatted <- count_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# show the table
+kable(comp_formatted, caption = "Comparing numbers of sessions and rounds between the two groups",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
+### Bet sizes
+
+In each round, players can choose from 10 different betting sizes (from 0.25 euro till 20.00 euro). For each player, we count how often they selected each bet size, and calculated the relative proportion of each bet size being chosen. Figure \@ref(fig:bets-pattern) shows the betting patterns of both groups as heatmaps. Players were more likely to choose a small bet size rather than a large bet size, and this tendency is more pronounced in the low-risk group than in the high-risk group.
+
+(ref:bets-pattern-cap) Heatmaps of betting patterns of all players.
+
+```{r bets-pattern, fig.pos="center", fig.cap='(ref:bets-pattern-cap)', fig.width=5, fig.height=8}
+# combine the data frame of bet counts and the median bet size
+# and order the players from small median bet size to large median bet size
+# for the purpose of plotting
+bets <- demo %>%
+  select(id_player, bet_median)
+
+bet_sizes <- unique(bets_count$stake)
+bet_sizes <- sort(bet_sizes, decreasing = FALSE)
+
+bets_count <- bets_count %>%
+  full_join(bets, by = "id_player") %>%
+  arrange(group, bet_median) %>%
+  mutate(
+    id = c(rep(1:n_HR, each = 10), rep(1:n_LR, each = 10)),
+    stake = factor(stake, levels = bet_sizes)
+  )
+
+# make a heatmap for the betting patterns of all players
+bets_heatmap <- ggplot(bets_count, aes(stake, id, fill = prop)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "black") +
+  facet_wrap(~group, scales = "free_y") +
+  labs(fill = "Proportion", x = "Bet (euro)") +
+  theme(
+    # remove player ids on the y axis
+    axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank(), 
+    legend.position = "top", legend.direction = "horizontal"
+  )
+
+bets_heatmap
+
+ggsave("figure/bets_heatmap.pdf", bets_heatmap, width = 5, height = 8)
+```
+
+For each player, we calculate their (1) maximum bet size, (2) minimum bet size, (3) mean bet size, and (4) median bet size across all rounds. The high-risk group is then compared against the low-risk group on all four parameters. For all four parameters, the high-risk group bet more than the low-risk group (Table \@ref(tab:bet-compare)).
+
+```{r bet-compare, results = "asis"}
+# compare the high-risk and the low-risk group
+bets_HR <- filter(demo, group == "High-Risk")
+bets_LR <- filter(demo, group == "Low-Risk")
+
+bet_max_comp    <- TES(bets_HR$bet_max, bets_LR$bet_max, paired = F, conf = 0.95)
+bet_min_comp    <- TES(bets_HR$bet_min, bets_LR$bet_min, paired = F, conf = 0.95)
+bet_mean_comp   <- TES(bets_HR$bet_mean, bets_LR$bet_mean, paired = F, conf = 0.95)
+bet_median_comp <- TES(bets_HR$bet_median, bets_LR$bet_median, paired = F, conf = 0.95)
+
+bet_max_comp <- bet_max_comp %>% 
+  mutate(comp = "Maximum stake") %>%
+  select(comp, everything())
+
+bet_min_comp <- bet_min_comp %>% 
+  mutate(comp = "Minimum stake") %>%
+  select(comp, everything())
+
+bet_mean_comp <- bet_mean_comp %>% 
+  mutate(comp = "Mean stake") %>%
+  select(comp, everything())
+
+bet_median_comp <- bet_median_comp %>% 
+  mutate(comp = "Median stake") %>%
+  select(comp, everything())
+
+bet_comp <- rbind(bet_max_comp, bet_min_comp, bet_mean_comp, bet_median_comp)
+
+comp_formatted <- bet_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x, digits = 2)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# make a table
+kable(comp_formatted, caption = "Comparing the maximum, minimum, mean and median bet size between two groups",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
+
+### Wins
+
+For each player, we calculate the probability of winning, and the maximum, minimum, mean and median amounts of wins on rounds where players won (the win amount is what the players received minus the stake they wagered on each round). These parameters are then compared between the two groups. Table \@ref(tab:wins-compare) shows that players in the high-risk group tended to have a **higher** probability of winning, and their winning amounts tended to be larger than those for the low-risk group.
+
+```{r wins-compare, results = "asis"}
+# compare the high-risk group and the low-risk group
+wins_HR <- filter(demo, group == "High-Risk")
+wins_LR <- filter(demo, group == "Low-Risk")
+
+win_prob_comp   <- TES(wins_HR$win_prob, wins_LR$win_prob, paired = F, conf = .95)
+
+# remove NAs as some players might not have wins in the data
+wins_HR <- filter(wins_HR, !is.na(win_max))
+wins_LR <- filter(wins_LR, !is.na(win_max))
+
+win_max_comp    <- TES(wins_HR$win_max, wins_LR$win_max, paired = F, conf = .95)
+win_min_comp    <- TES(wins_HR$win_min, wins_LR$win_min, paired = F, conf = .95)
+win_mean_comp   <- TES(wins_HR$win_mean, wins_LR$win_mean, paired = F, conf = .95)
+win_median_comp <- TES(wins_HR$win_median, wins_LR$win_median, paired = F, conf = .95)
+
+win_prob_comp <- win_prob_comp %>%
+  mutate(comp = "Win probability") %>%
+  select(comp, everything())
+
+win_max_comp <- win_max_comp %>%
+  mutate(comp = "Maximum win") %>%
+  select(comp, everything())
+
+win_min_comp <- win_min_comp %>%
+  mutate(comp = "Minimum win") %>%
+  select(comp, everything())
+
+win_mean_comp <- win_mean_comp %>%
+  mutate(comp = "Mean win") %>%
+  select(comp, everything())
+
+win_median_comp <- win_median_comp %>%
+  mutate(comp = "Median win") %>%
+  select(comp, everything())
+
+win_comp <- rbind(win_prob_comp, win_max_comp, win_min_comp, win_mean_comp, win_median_comp)
+
+comp_formatted <- win_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x, digits = 2)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# make a table
+kable(comp_formatted, caption = "Comparing the probability and amount of wins between two groups.",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
+### Losses
+
+On rounds where players lost, we calculate the loss (equivalent to the stake). For each player, we calculate (1) the maximum loss, (2) the minimum loss, (3) the mean loss, and (4) the median loss.
+
+```{r losses-compare, results = "asis"}
+# compare the high-risk group and the low-risk group
+losses_HR <- filter(demo, group == "High-Risk")
+losses_LR <- filter(demo, group == "Low-Risk")
+
+# remove NAs as some players might not have losses in the data
+losses_HR <- filter(losses_HR, !is.na(loss_max))
+losses_LR <- filter(losses_LR, !is.na(loss_max))
+
+loss_max_comp    <- TES(losses_HR$loss_max, losses_LR$loss_max, paired = F, conf = .95)
+loss_min_comp    <- TES(losses_HR$loss_min, losses_LR$loss_min, paired = F, conf = .95)
+loss_mean_comp    <- TES(losses_HR$loss_mean, losses_LR$loss_mean, paired = F, conf = .95)
+loss_median_comp    <- TES(losses_HR$loss_median, losses_LR$loss_median, paired = F, conf = .95)
+
+loss_max_comp <- loss_max_comp %>%
+  mutate(comp = "Maximum loss") %>%
+  select(comp, everything())
+
+loss_min_comp <- loss_min_comp %>%
+  mutate(comp = "Minimum loss") %>%
+  select(comp, everything())
+
+loss_mean_comp <- loss_mean_comp %>%
+  mutate(comp = "Mean loss") %>%
+  select(comp, everything())
+
+loss_median_comp <- loss_median_comp %>%
+  mutate(comp = "Median loss") %>%
+  select(comp, everything())
+
+loss_comp <- rbind(loss_max_comp, loss_min_comp, loss_mean_comp, loss_median_comp)
+
+comp_formatted <- loss_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x, digits = 2)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# make a table
+kable(comp_formatted, caption = "Comparing the amount of losses between two groups.",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
+### Total spent
+
+```{r total spent - compare, results = "asis"}
+# compare the high-risk group and the low-risk group
+total_spent_HR <- filter(demo, group == "High-Risk")
+total_spent_LR <- filter(demo, group == "Low-Risk")
+
+total_spent_comp    <- TES(total_spent_HR$total_spent, 
+                           total_spent_LR$total_spent, 
+                           paired = F, conf = .95)
+
+total_spent_comp <- total_spent_comp %>%
+  mutate(comp = "Total spent") %>%
+  select(comp, everything())
+
+comp_formatted <- total_spent_comp %>%
+  mutate(
+    across(c(mean_x, sd_x, mean_y, sd_y, diff, lowerCI, upperCI), ~round(.x, digits = 2)),
+    across(c(df, t, logBF), ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)))
+
+# make a table
+kable(comp_formatted, caption = "Comparing the total amount of money spent between two groups.",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
+## All in one table
+
+Present all information in one table.
+
+```{r combine-all-tables, results = "asis"}
+# in the manuscript, we present all information in one table
+# here we combine the separate tables into one
+one_table <- rbind(income_comp, count_comp, bet_comp, win_comp, loss_comp, total_spent_comp)
+
+# correct the p values for multiple comparisons
+one_table$p <- p.adjust(one_table$pt, method = "holm")
+
+# do some formatting
+one_table <- one_table %>%
+  mutate(
+    # rename comp into Parameter
+    Parameter = comp,
+    # for these variables, keep 1 digit after the decimal point
+    across(c(mean_x:t, logBF), ~round(.x, digits = 1)),
+    # for effect size g, keep 3 digits after the decimal point
+    g = round(g, digits = 3),
+    # report p values below .001 as < .001
+    p = ifelse(p < .001, "<.001", sprintf("%.3f", round(p, digits = 3))),
+    # combine mean and standard deviation for each group
+    `High-Risk` = paste0(mean_x, " (", sd_x, ")"),
+    `Low-Risk` = paste0(mean_y, " (", sd_y, ")")
+    ) %>%
+  # delete some redundant variables
+  select(-c(comp:sd_y), -pt, -pw, -d, -BF) %>%
+  select(Parameter, `High-Risk`, `Low-Risk`, diff, lowerCI, upperCI, df, t, p, logBF, g)
+
+# show the table
+kable(one_table, caption = "Comparing characteristics of play behavior between the two groups.",
+      booktabs = T, align = "c") %>%
+  scroll_box(width = "100%", height = "100%")
+
+# show the table in latex code
+# kable(one_table, "latex",
+#       caption = "Comparing characteristics of play behavior between the two groups.",
+#       booktabs = T, align = "l") %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+
+<!--chapter:end:03-descriptives.Rmd-->
+
+# When to stop
+
+```{r stop load and select data}
+# load data
+stop <- read_csv("../../data/processed/stop.csv")
+```
+
+In this section, we analyze when players decided to stop. For this analysis, players need to have at least 10 rounds in total (all sessions combined) to be included in the analysis. The table below shows the number of players and rounds left in this analysis.
+
+```{r stop - data preparation, results='asis'}
+# players need to have at least 10 rounds
+# in order to be included in the analysis
+players_exclude <- stop %>% 
+  filter(
+    round_pos == "overall",
+    total_count < 10
+  ) %>%
+  .$id_player %>% unique
+
+stop <- stop %>% filter(!id_player %in% players_exclude)
+
+# calculate the remaining number of players and rounds
+count <- stop %>%
+  filter(round_pos == "overall") %>%
+  group_by(group) %>%
+  summarize(
+    player = n(),
+    round = mean(total_count),
+    sd = sd(total_count),
+    min = min(total_count),
+    max = max(total_count)
+  )
+
+kable(count, caption = "Number of players and rounds left")
+```
+
+## Plot
+
+For the remaining players, we calculate the overall probability of winning (using all game rounds), and the probability of winning on the last round of each session, when players decided to stop. These winning probabilities are plotted below for the two groups separately.  
+
+(ref:end-session-plot-cap) Probability of winning in all game rounds and at the end of a session. Error bars stand for 95\% within-subject confidence intervals.
+
+```{r stop plot, fig.cap="(ref:end-session-plot-cap)", fig.width=3.5, fig.height=3.5}
+# for the high-risk and the low-risk group separately,
+# calculate the mean winning probabilities for rounds at the end of session
+# and for all round combined
+stop_summary <- stop %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "win_prob", idvar = "id_player",
+                        withinvars = "round_pos")) %>%
+  mutate(round_pos = factor(round_pos, levels = c("overall", "end")))
+
+# plot winning probabilities
+stop_plot <- ggplot(stop_summary, aes(round_pos, win_prob, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), linetype = "dashed", position = position_dodge(width = 0.5)) +
+  geom_errorbar(aes(ymin = win_prob-ci, ymax = win_prob+ci), width = 0.2,
+                position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values=color_values) + 
+  scale_x_discrete(labels=c("end" = "End of session", "overall" = "All rounds")) +
+  labs(x = "Position of a round", 
+       y = "Probability of winning (%)",
+       color = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+
+stop_plot
+
+ggsave("figure/stop.pdf", stop_plot, width = 3.5, height = 3.5)
+```
+
+## ANOVA
+
+The winning probabilities are analyzed with a mixed ANOVA, with the position of a round (all rounds vs. end of session, within subjects) and the risk level (high vs. low, between subjects) as independent variables.
+
+```{r stop anova analysis, cache = TRUE, results = "asis"}
+# run an ANOVA
+stop_anova <- aov_ez(id = "id_player"
+                     , dv = "win_prob"
+                     , within = "round_pos"
+                     , between = "group"
+                     , data = stop)
+
+stop_anova <- nice(stop_anova)
+
+# do a bit formatting
+stop_anova <- stop_anova %>%
+  mutate(
+    Effect = c("Risk Level", "Round Position", "Interaction"),
+    # remove asterisks from the F values
+    `F` = str_remove_all(`F`, "[*]"),
+    # remove whitespace
+    `F` = str_trim(`F`)
+  ) %>%
+  rename(p = "p.value")
+
+kable(stop_anova, 
+      caption = "When do players decide to stop?",
+      booktabs = T, align = "l")
+
+# # show the table in latex code
+# kable(stop_anova, "latex",
+#       caption = "Anova on the decision to stop playing",
+#       booktabs = T, align = "l") %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+## Pairwise comparisons
+
+Next we conduct a series of pairwise comparisons. First, we examine the effects within groups, by comparing the overall winning probability against the winning probability at session end for each group, separately. Next we examine the effects between groups, by comparing the overall winning probabilities between the two groups, and the winning probabilities at session end between the two groups. We further calculate a difference score for each player (overall winning probability - winning probability at session end) and compare the difference scores between two groups. P values are corrected for multiple comparisons using the Holm-Bonferroni method.
+
+```{r stop pairwise t tests, results='asis'}
+# calculate mean winning probabilities for rounds at session end
+# and all rounds combined
+win_prob <- stop %>%
+  group_by(round_pos) %>%
+  summarize(mean = mean(win_prob), sd = sd(win_prob))
+
+# calculate mean winning probabilities for rounds at session end
+# and all rounds combined, for two groups separately
+win_prob_per_group <- stop %>%
+  group_by(group, round_pos) %>%
+  summarize(mean = mean(win_prob), sd = sd(win_prob))
+
+# for pairwise comparisons, we need the data in the wide format
+stop_wide <- stop %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = round_pos,
+              values_from = win_prob) %>%
+  # calculate a difference score
+  mutate(diff = end - overall)
+
+
+# within-group comparisons
+# first, compare the effect within each group
+comp_within <- stop_wide %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$end, .x$overall, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons
+# next, compare the probabilities and the difference scores between groups
+comp_between1 <- TES(filter(stop_wide, group == "High-Risk")$end,
+                     filter(stop_wide, group == "Low-Risk")$end, paired = FALSE)
+
+comp_between2 <- TES(filter(stop_wide, group == "High-Risk")$overall,
+                     filter(stop_wide, group == "Low-Risk")$overall, paired = FALSE)
+
+comp_between3 <- TES(filter(stop_wide, group == "High-Risk")$diff,
+                     filter(stop_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
+
+# combine and correct p values for multiple comparisons
+comp <- bind_rows(comp_within, comp_between) %>%
+  mutate(
+    Comparison = c("Session End vs. Overall (High-Risk)", 
+                   "Session End vs. Overall (Low-Risk)", 
+                   "High- vs. Low-Risk (Session End)",
+                   "High- vs. Low-Risk (Overall)",
+                   "High- vs. Low-Risk (Difference)"),
+    pt = p.adjust(pt, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    across(diff:upperCI, ~round(.x, digits = 1)),
+    across(c(d, g), ~round(.x, digits = 3)),
+    t = round(t, digits = 1),
+    df = round(df, digits = 1),
+    p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
+    logBF = round(logBF, digits = 2)
+  ) %>%
+  select(Comparison, diff:t, p, logBF, g) 
+
+# show the table
+kable(comp, caption = "Pairwise comparisons for effects on when to stop",
+      booktabs = T, align = "l") %>%
+  scroll_box(width = "100%", height = "100%")
+
+# # show the table in latex code
+# kable(comp, "latex",
+#       caption = "Pairwise comparisons for effects on when to stop",
+#       booktabs = T, align = "l") %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+<!--chapter:end:04-when_to_stop.Rmd-->
+
+# Change in stake
+
+```{r stake-change-load-data}
+stake_change <- read_csv("../../data/processed/stake_change.csv")
+```
+
+In this section, we analyze change in stake after a win and a loss. For this analysis, players need to have at least 5 rounds following a win and 5 rounds following a loss to be included. The table below shows the number of players and rounds left in this analysis.
+
+```{r stake change - data preparation, results='asis'}
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- stake_change %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = stake_change_prop
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+stake_change <- filter(stake_change, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+count <- stake_change %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    player = n(),
+    round = mean(total_count),
+    sd = sd(total_count),
+    min = min(total_count),
+    max = max(total_count)
+  )
+
+kable(count, caption = "Number of players and rounds left")
+
+```
+
+
+## Plot
+
+For each player, we calculate (1) the probability (%) of changing stake after a win and a loss; (2) the average change in stake amount (euro) after a win and a loss. Since players can only choose from 10 amount levels, as a second metric of stake change, we convert stake amount into stake level (with 1 being the lowest stake level, i.e., 0.25 euro, and 10 being the highest stake level, i.e., 20.00 euro) and conduct the same analysis on the change in stake level.
+
+```{r stake-change-prob-plot}
+# plot the probability of changing stake after a win and a loss
+stake_change_prob_summary <- stake_change %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "stake_change_prop", idvar = "id_player",
+                        withinvars = "prev_outcome"))
+
+stake_change_prob_plot <-
+  ggplot(stake_change_prob_summary, aes(prev_outcome, stake_change_prop, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymin = stake_change_prop-ci, ymax = stake_change_prop+ci), 
+                width =0.2, position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values = color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Probability of changing stake (%)", color = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+
+
+```{r stake-change-size-plot}
+# the mean change in stake size (euro) after a win and a loss
+stake_change_size_summary <- stake_change %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, 
+                                       measurevar = "stake_change_size_overall", 
+                                       idvar = "id_player",
+                                       withinvars = "prev_outcome"))
+
+stake_change_size_plot <- stake_change_size_summary %>%
+  ggplot(aes(prev_outcome, stake_change_size_overall, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymin = stake_change_size_overall-ci, ymax = stake_change_size_overall+ci), 
+                width =0.2, position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values = color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Change in stake size (euro)", color = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+
+
+```{r stake-change-level-plot}
+# the mean change in stake level after a win and a loss
+stake_change_level_summary <- stake_change %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "stake_change_level_overall", 
+                                       idvar = "id_player",
+                                       withinvars = "prev_outcome"))
+
+stake_change_level_plot <- stake_change_level_summary %>%
+  ggplot(aes(prev_outcome, stake_change_level_overall, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymin = stake_change_level_overall-ci, ymax = stake_change_level_overall+ci), 
+                width =0.2, position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values = color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Change in stake level", color = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+
+(ref:stake-change-plot-cap) The probability of changing stake (left),  the average change in stake amount (euro; middle) and the average change in stake level (right) after a win and a loss for both groups. Error bars stand for 95\% within-subject confidence intervals.
+
+```{r stake-change-plot, fig.cap='(ref:stake-change-plot-cap)', fig.width=9, fig.height=3.5}
+# combine three plots
+stake_change_plot <- ggarrange(stake_change_prob_plot,
+                               stake_change_size_plot,
+                               stake_change_level_plot,  
+                               nrow = 1, common.legend = TRUE, legend="top")
+
+stake_change_plot
+
+ggsave("figure/stake_change.pdf", stake_change_plot, width = 9, height = 3.5)
+```
+
+## ANOVAs
+
+We conduct three ANOVAs for the three dependent variables, using prior game outcome (loss vs. win, within subjects) and risk level (high vs. low, between subjects) as independent variables.
+
+```{r stake-change-anova, results = "asis", cache=TRUE}
+# run ANOVAs
+stake_change_prob_anova <-
+  aov_ez(id = "id_player"
+         , dv = "stake_change_prop"
+         , data = stake_change
+         , between = "group"
+         , within = "prev_outcome")
+
+stake_change_prob_anova <- nice(stake_change_prob_anova)
+
+
+stake_change_size_anova <-
+  aov_ez(id = "id_player"
+         , dv = "stake_change_size"
+         , data = stake_change
+         , between = "group"
+         , within = "prev_outcome")
+
+stake_change_size_anova <-
+  aov_ez(id = "id_player"
+         , dv = "stake_change_size_overall"
+         , data = stake_change
+         , between = "group"
+         , within = "prev_outcome")
+
+stake_change_size_anova <- nice(stake_change_size_anova)
+
+stake_change_level_anova <-
+  aov_ez(id = "id_player"
+         , dv = "stake_change_level_overall"
+         , data = stake_change
+         , between = "group"
+         , within = "prev_outcome")
+
+stake_change_level_anova <- nice(stake_change_level_anova)
+
+# combine all anova tables and do some formatting
+change_anova_table <- 
+  bind_rows(
+    stake_change_prob_anova,
+    stake_change_size_anova,
+    stake_change_level_anova
+  ) %>%
+  mutate(
+    Parameter = rep(c("Prob of change (%)", "Change in amount (euro)", "Change in level"),
+                    each = 3),
+    Effect = rep(c("Risk Level", "Prior Outcome", "Interaction"), 3),
+    # remove asterisks from the F values
+    `F` = str_remove_all(`F`, "[*]"),
+    # remove whitespace
+    `F` = str_trim(`F`),
+    p = `p.value`
+  ) %>%
+  select(Parameter, Effect, df, MSE, `F`, ges, p)
+
+# show the table
+kable(change_anova_table, 
+      caption = "Effects of group and prior outcome on change in stake",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down")
+
+# show the table in latex code
+# kable(change_anova_table, "latex",
+#       caption = "Effects of group and prior outcome on change in stake",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+## Pairwise comparisons
+
+Next we conduct a series of pairwise comparisons for each of the three dependent variables. We first compare the effect of prior outcome on the probability of changing stake within each group (two comparisons). We then compare the probability of changing stake after a loss between two groups, and the probability of changing stake after a win between two groups. We further calculate a difference score between loss and win for each player, and compare the difference scores between groups as well. The same comparisons are conducted for the change in stake amount and the change in stake level. In total we conduct 15 comparisons. P values are corrected for multiple comparisons using the Holm-Bonferroni method.
+
+```{r change in stake pairwise comparisons, results='asis'}
+#### Probability of changing stake ####
+
+# descriptive statistics
+stake_change_per_outcome <- stake_change %>%
+  group_by(prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_prop),
+    sd = sd(stake_change_prop)
+    )
+  
+stake_change_per_cell <- stake_change %>%
+  group_by(group, prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_prop),
+    sd = sd(stake_change_prop)
+    )
+  
+# within group comparisons on prob of change
+stake_change_prob <- stake_change %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = prev_outcome,
+              values_from = stake_change_prop) %>%
+  mutate(diff = loss - win)
+
+change_prob_within <- stake_change_prob %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons on prob of change
+change_prob_between1 <- TES(filter(stake_change_prob, group == "High-Risk")$loss,
+                            filter(stake_change_prob, group == "Low-Risk")$loss, paired = FALSE)
+
+change_prob_between2 <- TES(filter(stake_change_prob, group == "High-Risk")$win,
+                            filter(stake_change_prob, group == "Low-Risk")$win, paired = FALSE)
+
+change_prob_between3 <- TES(filter(stake_change_prob, group == "High-Risk")$diff,
+                            filter(stake_change_prob, group == "Low-Risk")$diff, paired = FALSE)
+
+change_prob_between <- bind_rows(change_prob_between1, change_prob_between2, change_prob_between3)
+
+# combine
+change_prob_comp <- bind_rows(change_prob_within, change_prob_between)
+
+#### Change in stake size (euro) ####
+
+# descriptive statistics
+stake_size_per_outcome <- stake_change %>%
+  group_by(prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_size_overall) * 100, # turn into cents
+    sd = sd(stake_change_size_overall) * 100
+    )
+  
+stake_size_per_cell <- stake_change %>%
+  group_by(group, prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_size_overall) * 100,
+    sd = sd(stake_change_size_overall) * 100
+    )
+  
+# within group comparisons on change in stake size (euro)
+stake_change_size <- stake_change %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = prev_outcome,
+              values_from = stake_change_size_overall) %>%
+  mutate(diff = loss - win)
+
+change_size_within <- stake_change_size %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons on change in stake size (euro)
+stake_change_size <- stake_change_size %>%
+  mutate(diff = loss - win)
+
+change_size_between1 <- TES(filter(stake_change_size, group == "High-Risk")$loss,
+                            filter(stake_change_size, group == "Low-Risk")$loss, paired = FALSE)
+
+change_size_between2 <- TES(filter(stake_change_size, group == "High-Risk")$win,
+                            filter(stake_change_size, group == "Low-Risk")$win, paired = FALSE)
+
+change_size_between3 <- TES(filter(stake_change_size, group == "High-Risk")$diff,
+                            filter(stake_change_size, group == "Low-Risk")$diff, paired = FALSE)
+
+change_size_between <- bind_rows(change_size_between1, change_size_between2, change_size_between3)
+
+# combine
+change_size_comp <- bind_rows(change_size_within, change_size_between)
+
+
+#### Change in stake level ####
+
+# descriptive statistics
+stake_level_per_outcome <- stake_change %>%
+  group_by(prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_level_overall), 
+    sd = sd(stake_change_level_overall)
+    )
+  
+stake_level_per_cell <- stake_change %>%
+  group_by(group, prev_outcome) %>%
+  summarize(
+    mean = mean(stake_change_level_overall), 
+    sd = sd(stake_change_level_overall)
+    )
+
+# within group comparisons on change in stake level
+stake_change_level <- stake_change %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = prev_outcome,
+              values_from = stake_change_level_overall) %>%
+  mutate(diff = loss - win)
+
+change_level_within <- stake_change_level %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons on change in stake level
+
+change_level_between1 <- TES(filter(stake_change_level, group == "High-Risk")$loss,
+                            filter(stake_change_level, group == "Low-Risk")$loss, paired = FALSE)
+
+change_level_between2 <- TES(filter(stake_change_level, group == "High-Risk")$win,
+                            filter(stake_change_level, group == "Low-Risk")$win, paired = FALSE)
+
+change_level_between3 <- TES(filter(stake_change_level, group == "High-Risk")$diff,
+                            filter(stake_change_level, group == "Low-Risk")$diff, paired = FALSE)
+
+change_level_between <- bind_rows(change_level_between1, 
+                                  change_level_between2, 
+                                  change_level_between3)
+
+# combine
+change_level_comp <- bind_rows(change_level_within, change_level_between)
+
+
+#### Combine all comparisons ####
+
+# combine all results and correct p values for multiple comparisons
+comp <- bind_rows(change_prob_comp, change_size_comp, change_level_comp) %>%
+  mutate(
+    Parameter = rep(c("Prob of change (%)", "Change in amount (euro)", "Change in level"),
+                    each = 5),
+    Comparison = rep(c("Loss vs. Win (High-Risk)", "Loss vs. Win (Low-Risk)", 
+                       "High- vs. Low-Risk (Loss)", "High- vs. Low-Risk (Win)",
+                       "High- vs. Low-Risk (Difference)"),
+                     3),
+    pt = p.adjust(pt, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    diff = ifelse(Parameter == "Prob of change (%)", 
+                  sprintf("%.2f", round(diff, digits = 2)), 
+                  sprintf("%.4f", round(diff, digits = 4))),
+    lowerCI = ifelse(Parameter == "Prob of change (%)", 
+                  sprintf("%.2f", round(lowerCI, digits = 2)), 
+                  sprintf("%.4f", round(lowerCI, digits = 4))),
+    upperCI = ifelse(Parameter == "Prob of change (%)", 
+                  sprintf("%.2f", round(upperCI, digits = 2)), 
+                  sprintf("%.4f", round(upperCI, digits = 4))),
+    across(c(d, g), ~round(.x, digits = 3)),
+    t = round(t, digits = 1),
+    df = round(df, digits = 1),
+    p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
+    logBF = round(logBF, digits = 2)
+  ) %>%
+  select(Parameter, Comparison, diff:t, p, logBF, g) 
+
+# show the table
+kable(comp, 
+      caption = "Pairwise comparisons for effects on change in stake",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down") %>%
+  scroll_box(width = "100%", height = "100%")
+
+# show the table in latex code
+# kable(comp, "latex", 
+#       caption = "Pairwise comparisons for effects on change in stake",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+
+<!--chapter:end:05-change_in_stake.Rmd-->
+
+# Speed of play
+
+
+```{r speed of play load data}
+rt <- read_csv("../../data/processed/rt.csv")
+```
+
+In this section, we analyze the speed of play after a win or a loss (i.e., from starting the current game till putting in the first column). We do not use the RT of starting a game, because in this data set, the 'startRT' is from putting in the last column in the previous game till starting the current game. The 'startRT' therefore includes the visual and auditory feedback players receive (which differs between winning and losing), as well as the time potentially spent on adjusting the stake for the current game. The RT of putting in the first column, on the other hand, is not influenced by these factors. 
+
+Players need to have at least 5 rounds following a win and 5 rounds following a loss to be included. The table below shows the number of players and rounds left in this analysis.
+
+```{r speed of play - data preparation, results='asis'}
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- rt %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = rt_mean
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+rt <- filter(rt, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+count <- rt %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    player = n(),
+    round = mean(total_count),
+    sd = sd(total_count),
+    min = min(total_count),
+    max = max(total_count)
+  )
+
+kable(count, caption = "Number of players and rounds left")
+
+```
+
+
+## Plot
+
+(ref:rt-plot-cap) Response time (left: raw RT; right: RT z scores) after a win and after a loss. 
+
+```{r rt-overall-plot, fig.cap="(ref:rt-plot-cap)", fig.width=5, fig.height=3}
+# for each group, calculate the mean RT after winning and losing
+rt_summary <- rt %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "rt_mean", idvar = "id_player",
+                        withinvars = "prev_outcome"))
+
+# plot the results
+rt_plot <- rt_summary %>%
+  ggplot(aes(prev_outcome, rt_mean, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymin = rt_mean-ci, ymax = rt_mean+ci), width = 0.2, 
+                position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values = color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", y = "Response time (milliseconds)", color = "Group") 
+
+
+# for each group, calculate the mean RT z score after winning and losing
+rt_z_summary <- rt %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "rt_z_mean", idvar = "id_player",
+                        withinvars = "prev_outcome"))
+
+rt_z_plot <- rt_z_summary %>%
+  ggplot(aes(prev_outcome, rt_z_mean, color = group)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  geom_line(aes(group = group), position = position_dodge(width = 0.5), linetype = "dashed") +
+  geom_errorbar(aes(ymin = rt_z_mean-ci, ymax = rt_z_mean+ci), width =0.2, 
+                position = position_dodge(width = 0.5)) +
+  # use colorblind-friendly color
+  scale_color_manual(values = color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", y = "Response time (z score)", color = "Group") 
+
+# combine the two plots
+rt_combined_plot <- ggarrange(rt_plot, rt_z_plot,
+                               nrow = 1, common.legend = TRUE, legend="top")
+
+rt_combined_plot
+
+ggsave("figure/rt.pdf", rt_combined_plot, width = 5, height = 3)
+
+
+```
+
+## ANOVAs
+
+For both the raw RTs and RT z scores, we conduct a mixed ANOVA, with prior game outcome (loss vs. win, within subjects) and player risk level (high vs. low, between subjects) as independent variables.
+
+```{r rt-analysis, cache=TRUE, results="asis"}
+# run ANOVAs
+rt_anova <-
+  afex::aov_ez(id = "id_player"
+               , dv = "rt_mean"
+               , data = rt
+               , between = "group"
+               , within = "prev_outcome")
+
+rt_anova <- nice(rt_anova)
+
+rt_z_anova <-
+  afex::aov_ez(id = "id_player"
+               , dv = "rt_z_mean"
+               , data = rt
+               , between = "group"
+               , within = "prev_outcome")
+
+rt_z_anova <- nice(rt_z_anova)
+
+# combine anova tables and do some formatting
+rt_anova_table <- 
+  bind_rows(
+    rt_anova,
+    rt_z_anova,
+  ) %>%
+  mutate(
+    Parameter = rep(c("RT (milliseconds)", "RT (z scores)"),
+                    each = 3),
+    Effect = rep(c("Risk Level", "Prior Outcome", "Interaction"), 2),
+    # remove asterisks from the F values
+    `F` = str_remove_all(`F`, "[*]"),
+    # remove whitespace
+    `F` = str_trim(`F`),
+    p = `p.value`
+  ) %>%
+  select(Parameter, Effect, df, MSE, `F`, ges, p)
+  
+# show the table
+kable(rt_anova_table, 
+      caption = "Effects of group and prior outcome on speed of play",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down")
+
+# show the table in latex code
+# kable(rt_anova_table, "latex",
+#       caption = "Effects of group and prior outcome on speed of play",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+## Pairwise comparisons
+
+We similarly conduct a series of within- and between-group pairwise comparisons. More specifically, we compare the effect of a loss vs. a win on the speed of play within each group. We then compare the speed of play after a loss, after a loss and the difference in speed of play between loss and win, between the two groups. In total we have 10 comparisons - p values are again corrected for multiple comparisons using the Holm-Bonferroni method.
+
+```{r rt pairwise comparisons, results='asis'}
+#### Raw RTs ####
+
+# descriptive statistics
+rt_group <- rt %>%
+  group_by(group) %>%
+  summarize(
+    mean = mean(rt_mean),
+    sd = sd(rt_mean)
+  )
+
+rt_outcome <- rt %>%
+  group_by(prev_outcome) %>%
+  summarize(
+    mean = mean(rt_mean),
+    sd = sd(rt_mean)
+  )
+
+rt_all_cells <- rt %>%
+  group_by(group, prev_outcome) %>%
+  summarize(
+    mean = mean(rt_mean),
+    sd = sd(rt_mean)
+  )
+
+# pairwise comparisons
+rt_wide <- rt %>%
+  pivot_wider(id_cols = c(group, id_player), 
+              names_from = prev_outcome, values_from = rt_mean) %>%
+  mutate(diff = loss - win)
+
+# first, compare the effect of loss vs. win within each group
+rt_comp_within <-  rt_wide %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# next, compare the two groups
+comp_between1 <- TES(filter(rt_wide, group == "High-Risk")$loss,
+                     filter(rt_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- TES(filter(rt_wide, group == "High-Risk")$win,
+                     filter(rt_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- TES(filter(rt_wide, group == "High-Risk")$diff,
+                     filter(rt_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+rt_comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
+
+#### RT z scores ####
+
+# descriptive statistics
+rt_z_group <- rt %>%
+  group_by(group) %>%
+  summarize(
+    mean = mean(rt_z_mean),
+    sd = sd(rt_z_mean)
+  )
+
+rt_z_outcome <- rt %>%
+  group_by(prev_outcome) %>%
+  summarize(
+    mean = mean(rt_z_mean),
+    sd = sd(rt_z_mean)
+  )
+
+rt_z_all_cells <- rt %>%
+  group_by(group, prev_outcome) %>%
+  summarize(
+    mean = mean(rt_z_mean),
+    sd = sd(rt_z_mean)
+  )
+
+# pairwise comparisons
+rt_z_wide <- rt %>%
+  pivot_wider(id_cols = c(group, id_player), 
+              names_from = prev_outcome, values_from = rt_z_mean) %>%
+  mutate(diff = loss - win)
+
+# first, compare the effect of loss vs. win within each group
+rt_z_comp_within <-  rt_z_wide %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# next, compare the two groups
+comp_between1 <- TES(filter(rt_z_wide, group == "High-Risk")$loss,
+                     filter(rt_z_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- TES(filter(rt_z_wide, group == "High-Risk")$win,
+                     filter(rt_z_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- TES(filter(rt_z_wide, group == "High-Risk")$diff,
+                     filter(rt_z_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+rt_z_comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
+
+#### Combine all comparisons ####
+
+# combine all results and correct p values for multiple comparisons
+comp <- 
+  bind_rows(
+    rt_comp_within, 
+    rt_comp_between, 
+    rt_z_comp_within,
+    rt_z_comp_between
+  ) %>%
+  mutate(
+    Parameter = rep(c("RT (milliseconds)", "RT (z scores)"),
+                    each = 5),
+    Comparison = rep(c("Loss vs. Win (High-Risk)", "Loss vs. Win (Low-Risk)", 
+                       "High- vs. Low-Risk (Loss)", "High- vs. Low-Risk (Win)",
+                       "High- vs. Low-Risk (Difference)"),
+                     2),
+    pt = p.adjust(pt, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    diff = ifelse(Parameter == "RT (milliseconds)", 
+                  sprintf("%.1f", round(diff, digits = 1)), 
+                  sprintf("%.3f", round(diff, digits = 3))),
+    lowerCI = ifelse(Parameter == "RT (milliseconds)", 
+                  sprintf("%.1f", round(lowerCI, digits = 1)), 
+                  sprintf("%.3f", round(lowerCI, digits = 3))),
+    upperCI = ifelse(Parameter == "RT (milliseconds)", 
+                  sprintf("%.1f", round(upperCI, digits = 1)), 
+                  sprintf("%.3f", round(upperCI, digits = 3))),
+    across(c(d, g), ~round(.x, digits = 3)),
+    t = round(t, digits = 1),
+    df = round(df, digits = 1),
+    p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
+    logBF = round(logBF, digits = 2)
+  ) %>%
+  select(Parameter, Comparison, diff:t, p, logBF, g) 
+
+# show the table
+kable(comp, 
+      caption = "Pairwise comparisons for effects on speed of play",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down") %>%
+  scroll_box(width = "100%", height = "100%")
+
+
+# kable(comp, "latex", 
+#       caption = "Pairwise comparisons for effects on speed of play",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+
+<!--chapter:end:06-speed_of_play.Rmd-->
+
+# Trial counts
+
+Here we count the number of players and rounds included in each analysis, and present the counts in one table.
+
+```{r trial count, results="asis"}
+# load data
+stop <- read_csv("../../data/processed/stop.csv")
+
+# players need to have at least 10 rounds
+# in order to be included in the analysis
+players_exclude <- stop %>% 
+  filter(
+    round_pos == "overall",
+    total_count < 10
+  ) %>%
+  .$id_player %>% unique
+
+stop <- stop %>% filter(!id_player %in% players_exclude)
+
+# calculate the remaining number of players and rounds
+stop_count <- stop %>%
+  filter(round_pos == "overall") %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+remove(stop)
+
+# change in stake
+stake_change <- read_csv("../../data/processed/stake_change.csv")
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- stake_change %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = stake_change_prop
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+stake_change <- filter(stake_change, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+stake_count <- stake_change %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+
+remove(stake_change)
+
+# speed of play
+rt <- read_csv("../../data/processed/rt.csv")
+
+# only participants with at least 5 rounds following wins and losses
+# are included in the plot and following analyses
+players_incldue <- rt %>%
+  filter(n_round >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = prev_outcome,
+    values_from = rt_mean
+  ) %>%
+  drop_na() %>%
+  .$id_player
+
+rt <- filter(rt, id_player %in% players_incldue)
+
+# calculate the remaining number of players and rounds
+rt_count <- rt %>%
+  group_by(group, id_player) %>%
+  summarize(total_count = sum(n_round)) %>%
+  group_by(group) %>%
+  summarize(
+    Player = n(),
+    Total = sum(total_count),
+    Mean = mean(total_count),
+    SD = sd(total_count),
+    Min = min(total_count),
+    Max = max(total_count)
+  ) 
+
+remove(rt)
+
+# combine all counts and do some formatting
+count <- 
+  bind_rows(
+    stop_count,
+    stake_count,
+    rt_count
+  ) %>%
+  mutate(
+    Analysis = rep(c("When to stop", "Change in stake", "Speed of play"), each = 2),
+    Group = group,
+    Mean = round(Mean, digits = 1),
+    SD = round(SD, digits = 1)
+  ) %>%
+  select(Analysis, Group, Player, Total, Mean, SD, Min, Max)
+
+# show the table
+kable(count, 
+      caption = "Number of players and rounds included in each analysis",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down")
+
+
+# kable(count, "latex",
+#       caption = "Number of players and rounds included in each analysis",
+#       booktabs = T, align = "l") %>%
+#   collapse_rows(columns = 1) %>%
+#   kable_styling(latex_options = "scale_down")
+```
+
+<!--chapter:end:07-trial_counts.Rmd-->
+
