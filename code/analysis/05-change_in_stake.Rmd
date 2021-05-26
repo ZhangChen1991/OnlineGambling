@@ -397,3 +397,114 @@ kable(comp,
 #   kable_styling(latex_options = "scale_down")
 ```
 
+```{r change in stake non-parametric tests, results='asis'}
+source("function/RANKT.R")
+
+#### Probability of changing stake ####
+
+# within group comparisons on prob of change
+change_prob_within <- stake_change_prob %>%
+  group_by(group) %>%
+  group_modify(~RANKT(.x$loss, .x$win, paired = TRUE)) %>%
+  ungroup() %>% select(-group, -V)
+
+# between group comparisons on prob of change
+change_prob_between1 <- RANKT(filter(stake_change_prob, group == "High-Risk")$loss,
+                            filter(stake_change_prob, group == "Low-Risk")$loss, paired = FALSE)
+
+change_prob_between2 <- RANKT(filter(stake_change_prob, group == "High-Risk")$win,
+                            filter(stake_change_prob, group == "Low-Risk")$win, paired = FALSE)
+
+change_prob_between3 <- RANKT(filter(stake_change_prob, group == "High-Risk")$diff,
+                            filter(stake_change_prob, group == "Low-Risk")$diff, paired = FALSE)
+
+change_prob_between <- bind_rows(change_prob_between1, change_prob_between2, change_prob_between3) %>%
+  select(-W)
+
+# combine
+change_prob_comp <- bind_rows(change_prob_within, change_prob_between)
+
+#### Change in stake size (euro) ####
+
+# within group comparisons on change in stake size (euro)
+change_size_within <- stake_change_size %>%
+  group_by(group) %>%
+  group_modify(~RANKT(.x$loss, .x$win, paired = TRUE)) %>%
+  ungroup() %>% select(-group, -V)
+
+# between group comparisons on change in stake size (euro)
+stake_change_size <- stake_change_size %>%
+  mutate(diff = loss - win)
+
+change_size_between1 <- RANKT(filter(stake_change_size, group == "High-Risk")$loss,
+                            filter(stake_change_size, group == "Low-Risk")$loss, paired = FALSE)
+
+change_size_between2 <- RANKT(filter(stake_change_size, group == "High-Risk")$win,
+                            filter(stake_change_size, group == "Low-Risk")$win, paired = FALSE)
+
+change_size_between3 <- RANKT(filter(stake_change_size, group == "High-Risk")$diff,
+                            filter(stake_change_size, group == "Low-Risk")$diff, paired = FALSE)
+
+change_size_between <- bind_rows(change_size_between1, change_size_between2, change_size_between3) %>%
+  select(-W)
+
+# combine
+change_size_comp <- bind_rows(change_size_within, change_size_between)
+
+#### Change in stake level ####
+
+# within group comparisons on change in stake level
+change_level_within <- stake_change_level %>%
+  group_by(group) %>%
+  group_modify(~RANKT(.x$loss, .x$win, paired = TRUE)) %>%
+  ungroup() %>% select(-group, -V)
+
+# between group comparisons on change in stake level
+
+change_level_between1 <- RANKT(filter(stake_change_level, group == "High-Risk")$loss,
+                            filter(stake_change_level, group == "Low-Risk")$loss, paired = FALSE)
+
+change_level_between2 <- RANKT(filter(stake_change_level, group == "High-Risk")$win,
+                            filter(stake_change_level, group == "Low-Risk")$win, paired = FALSE)
+
+change_level_between3 <- RANKT(filter(stake_change_level, group == "High-Risk")$diff,
+                            filter(stake_change_level, group == "Low-Risk")$diff, paired = FALSE)
+
+change_level_between <- bind_rows(change_level_between1, 
+                                  change_level_between2, 
+                                  change_level_between3) %>%
+  select(-W)
+
+# combine
+change_level_comp <- bind_rows(change_level_within, change_level_between)
+
+#### Combine all comparisons ####
+
+# combine all results and correct p values for multiple comparisons
+comp <- bind_rows(change_prob_comp, change_size_comp, change_level_comp) %>%
+  mutate(
+    Parameter = rep(c("Prob of change (%)", "Change in amount (euro)", "Change in level"),
+                    each = 5),
+    Comparison = rep(c("Loss vs. Win (High-Risk)", "Loss vs. Win (Low-Risk)", 
+                       "High- vs. Low-Risk (Loss)", "High- vs. Low-Risk (Win)",
+                       "High- vs. Low-Risk (Difference)"),
+                     3),
+    p = p.adjust(p, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    p = ifelse(p < .001, "<.001", sprintf("%.3f", round(p, digits = 3))),
+  ) %>%
+  select(Parameter, Comparison, rank_biserial, lowerCI, upperCI, p) 
+
+# show the table
+kable(comp, 
+      caption = "Pairwise comparisons for effects on change in stake (non-parametric)",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+

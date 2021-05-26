@@ -309,3 +309,83 @@ kable(comp,
 #   kable_styling(latex_options = "scale_down")
 ```
 
+```{r speed of play non-parametric tests, results='asis'}
+source("function/RANKT.R")
+
+#### Raw RTs ####
+# first, compare the effect of loss vs. win within each group
+rt_comp_within <-  rt_wide %>%
+  group_by(group) %>%
+  group_modify(~RANKT(.x$loss, .x$win, paired = TRUE)) %>%
+  ungroup() %>% select(-group, -V)
+
+# next, compare the two groups
+comp_between1 <- RANKT(filter(rt_wide, group == "High-Risk")$loss,
+                     filter(rt_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- RANKT(filter(rt_wide, group == "High-Risk")$win,
+                     filter(rt_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- RANKT(filter(rt_wide, group == "High-Risk")$diff,
+                     filter(rt_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+rt_comp_between <- bind_rows(comp_between1, comp_between2, comp_between3) %>%
+  select(-W)
+
+#### RT z scores ####
+
+# first, compare the effect of loss vs. win within each group
+rt_z_comp_within <-  rt_z_wide %>%
+  group_by(group) %>%
+  group_modify(~RANKT(.x$loss, .x$win, paired = TRUE)) %>%
+  ungroup() %>% select(-group, -V)
+
+# next, compare the two groups
+comp_between1 <- RANKT(filter(rt_z_wide, group == "High-Risk")$loss,
+                     filter(rt_z_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- RANKT(filter(rt_z_wide, group == "High-Risk")$win,
+                     filter(rt_z_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- RANKT(filter(rt_z_wide, group == "High-Risk")$diff,
+                     filter(rt_z_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+rt_z_comp_between <- bind_rows(comp_between1, comp_between2, comp_between3) %>%
+  select(-W)
+
+#### Combine all comparisons ####
+
+# combine all results and correct p values for multiple comparisons
+comp <- 
+  bind_rows(
+    rt_comp_within, 
+    rt_comp_between, 
+    rt_z_comp_within,
+    rt_z_comp_between
+  ) %>%
+  mutate(
+    Parameter = rep(c("RT (milliseconds)", "RT (z scores)"),
+                    each = 5),
+    Comparison = rep(c("Loss vs. Win (High-Risk)", "Loss vs. Win (Low-Risk)", 
+                       "High- vs. Low-Risk (Loss)", "High- vs. Low-Risk (Win)",
+                       "High- vs. Low-Risk (Difference)"),
+                     2),
+    p = p.adjust(p, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    p = ifelse(p < .001, "<.001", sprintf("%.3f", round(p, digits = 3))),
+  ) %>%
+  select(Parameter, Comparison, rank_biserial, lowerCI, upperCI, p) 
+
+# show the table
+kable(comp, 
+      caption = "Pairwise comparisons for effects on speed of play (non-parametric)",
+      booktabs = T, align = "l") %>%
+  collapse_rows(columns = 1) %>%
+  kable_styling(latex_options = "scale_down") %>%
+  scroll_box(width = "100%", height = "100%")
+```
+
