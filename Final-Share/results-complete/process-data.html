@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Process data | Winning and losing in online gambling</title>
+  <meta name="description" content="Chapter 3 Process data | Winning and losing in online gambling" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Process data | Winning and losing in online gambling" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Process data | Winning and losing in online gambling" />
+  
+  
+  
+
+
+
+<meta name="date" content="2021-06-15" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="libraries-and-session-info.html"/>
+<link rel="next" href="descriptives.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="libraries-and-session-info.html"><a href="libraries-and-session-info.html"><i class="fa fa-check"></i><b>2</b> Libraries and session info</a></li>
+<li class="chapter" data-level="3" data-path="process-data.html"><a href="process-data.html"><i class="fa fa-check"></i><b>3</b> Process data</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="process-data.html"><a href="process-data.html#player-and-play-behavior"><i class="fa fa-check"></i><b>3.1</b> Player and play behavior</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="process-data.html"><a href="process-data.html#descriptive_data.csv"><i class="fa fa-check"></i><b>3.1.1</b> descriptive_data.csv</a></li>
+<li class="chapter" data-level="3.1.2" data-path="process-data.html"><a href="process-data.html#sessions_count.csv"><i class="fa fa-check"></i><b>3.1.2</b> sessions_count.csv</a></li>
+<li class="chapter" data-level="3.1.3" data-path="process-data.html"><a href="process-data.html#bet_counts.csv"><i class="fa fa-check"></i><b>3.1.3</b> bet_counts.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="process-data.html"><a href="process-data.html#stop"><i class="fa fa-check"></i><b>3.2</b> Stop</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="process-data.html"><a href="process-data.html#stop.csv"><i class="fa fa-check"></i><b>3.2.1</b> stop.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="process-data.html"><a href="process-data.html#stake-change"><i class="fa fa-check"></i><b>3.3</b> Stake change</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="process-data.html"><a href="process-data.html#stake_change.csv"><i class="fa fa-check"></i><b>3.3.1</b> stake_change.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="process-data.html"><a href="process-data.html#speed-of-play"><i class="fa fa-check"></i><b>3.4</b> Speed of play</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="process-data.html"><a href="process-data.html#rt.csv"><i class="fa fa-check"></i><b>3.4.1</b> rt.csv</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="descriptives.html"><a href="descriptives.html"><i class="fa fa-check"></i><b>4</b> Descriptives</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="descriptives.html"><a href="descriptives.html#player-characteristics"><i class="fa fa-check"></i><b>4.1</b> Player characteristics</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="descriptives.html"><a href="descriptives.html#age-and-gender."><i class="fa fa-check"></i><b>4.1.1</b> Age and gender.</a></li>
+<li class="chapter" data-level="4.1.2" data-path="descriptives.html"><a href="descriptives.html#risk-levels"><i class="fa fa-check"></i><b>4.1.2</b> Risk levels</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="descriptives.html"><a href="descriptives.html#play-behavior-characteristics"><i class="fa fa-check"></i><b>4.2</b> Play behavior characteristics</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="descriptives.html"><a href="descriptives.html#number-of-sessions-and-rounds"><i class="fa fa-check"></i><b>4.2.1</b> Number of sessions and rounds</a></li>
+<li class="chapter" data-level="4.2.2" data-path="descriptives.html"><a href="descriptives.html#bet-sizes"><i class="fa fa-check"></i><b>4.2.2</b> Bet sizes</a></li>
+<li class="chapter" data-level="4.2.3" data-path="descriptives.html"><a href="descriptives.html#wins"><i class="fa fa-check"></i><b>4.2.3</b> Wins</a></li>
+<li class="chapter" data-level="4.2.4" data-path="descriptives.html"><a href="descriptives.html#losses"><i class="fa fa-check"></i><b>4.2.4</b> Losses</a></li>
+<li class="chapter" data-level="4.2.5" data-path="descriptives.html"><a href="descriptives.html#total-spent"><i class="fa fa-check"></i><b>4.2.5</b> Total spent</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="descriptives.html"><a href="descriptives.html#all-in-one-table"><i class="fa fa-check"></i><b>4.3</b> All in one table</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="when-to-stop.html"><a href="when-to-stop.html"><i class="fa fa-check"></i><b>5</b> When to stop</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="when-to-stop.html"><a href="when-to-stop.html#plot"><i class="fa fa-check"></i><b>5.1</b> Plot</a></li>
+<li class="chapter" data-level="5.2" data-path="when-to-stop.html"><a href="when-to-stop.html#anova"><i class="fa fa-check"></i><b>5.2</b> ANOVA</a></li>
+<li class="chapter" data-level="5.3" data-path="when-to-stop.html"><a href="when-to-stop.html#pairwise-comparisons"><i class="fa fa-check"></i><b>5.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="change-in-stake.html"><a href="change-in-stake.html"><i class="fa fa-check"></i><b>6</b> Change in stake</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="change-in-stake.html"><a href="change-in-stake.html#plot-1"><i class="fa fa-check"></i><b>6.1</b> Plot</a></li>
+<li class="chapter" data-level="6.2" data-path="change-in-stake.html"><a href="change-in-stake.html#anovas"><i class="fa fa-check"></i><b>6.2</b> ANOVAs</a></li>
+<li class="chapter" data-level="6.3" data-path="change-in-stake.html"><a href="change-in-stake.html#pairwise-comparisons-1"><i class="fa fa-check"></i><b>6.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html"><i class="fa fa-check"></i><b>7</b> Speed of play</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#plot-2"><i class="fa fa-check"></i><b>7.1</b> Plot</a></li>
+<li class="chapter" data-level="7.2" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#anovas-1"><i class="fa fa-check"></i><b>7.2</b> ANOVAs</a></li>
+<li class="chapter" data-level="7.3" data-path="speed-of-play-1.html"><a href="speed-of-play-1.html#pairwise-comparisons-2"><i class="fa fa-check"></i><b>7.3</b> Pairwise comparisons</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="trial-counts.html"><a href="trial-counts.html"><i class="fa fa-check"></i><b>8</b> Trial counts</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Winning and losing in online gambling</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="process-data" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Process data</h1>
+<p>The raw data on the individual game level cannot be shared as they are proprietary. We nevertheless provide the code that we used to process the raw data to get processed player-level data. The processed (summary) data are shared (in the <code>data/processed</code> folder) and can be used to reproduce the results that we report in the paper.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="process-data.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">#### load data from high-risk players ####</span></span>
+<span id="cb4-2"><a href="process-data.html#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="process-data.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># get all folders where data from high-risk players are saved</span></span>
+<span id="cb4-4"><a href="process-data.html#cb4-4" aria-hidden="true" tabindex="-1"></a>folders <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(<span class="st">&quot;../../data/raw/data_addict_players&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">recursive =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-5"><a href="process-data.html#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="process-data.html#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># get all file names</span></span>
+<span id="cb4-7"><a href="process-data.html#cb4-7" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">paste0</span>(folders, <span class="st">&quot;/rounds_data.csv&quot;</span>)</span>
+<span id="cb4-8"><a href="process-data.html#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="process-data.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># read csv files</span></span>
+<span id="cb4-10"><a href="process-data.html#cb4-10" aria-hidden="true" tabindex="-1"></a>d_high_risk <span class="ot">&lt;-</span> files <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="process-data.html#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dfr</span>(<span class="sc">~</span><span class="fu">read_csv</span>(.x, <span class="at">skip =</span> <span class="dv">1</span>,</span>
+<span id="cb4-12"><a href="process-data.html#cb4-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;id_player&quot;</span>, <span class="st">&quot;level&quot;</span>,<span class="st">&quot;id_session&quot;</span>, <span class="st">&quot;id_round&quot;</span>, <span class="st">&quot;stake&quot;</span>, <span class="st">&quot;win&quot;</span>, </span>
+<span id="cb4-13"><a href="process-data.html#cb4-13" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;rt_start&quot;</span>, <span class="st">&quot;rt1&quot;</span>, <span class="st">&quot;rt2&quot;</span>, <span class="st">&quot;rt3&quot;</span>, <span class="st">&quot;rt4&quot;</span>, <span class="st">&quot;rt5&quot;</span>, <span class="st">&quot;rt6&quot;</span>, <span class="st">&quot;rt7&quot;</span>, <span class="st">&quot;rt8&quot;</span>, </span>
+<span id="cb4-14"><a href="process-data.html#cb4-14" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;rt9&quot;</span>, <span class="st">&quot;rt10&quot;</span>, <span class="st">&quot;rt11&quot;</span>, <span class="st">&quot;rt12&quot;</span>, <span class="st">&quot;bonus&quot;</span>),</span>
+<span id="cb4-15"><a href="process-data.html#cb4-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_types =</span>  <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>())))</span>
+<span id="cb4-16"><a href="process-data.html#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="process-data.html#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># load some demographic data </span></span>
+<span id="cb4-18"><a href="process-data.html#cb4-18" aria-hidden="true" tabindex="-1"></a>d_high_risk_demo <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;../../data/raw/meta_data_addict_players.csv&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb4-19"><a href="process-data.html#cb4-19" aria-hidden="true" tabindex="-1"></a>                               <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>()))</span>
+<span id="cb4-20"><a href="process-data.html#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="process-data.html#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># add demographic information to the main data frame</span></span>
+<span id="cb4-22"><a href="process-data.html#cb4-22" aria-hidden="true" tabindex="-1"></a>d_high_risk <span class="ot">&lt;-</span> d_high_risk <span class="sc">%&gt;%</span></span>
+<span id="cb4-23"><a href="process-data.html#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(d_high_risk_demo, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id_player&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>))</span>
+<span id="cb4-24"><a href="process-data.html#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="process-data.html#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="do">#### load data from low-risk players ####</span></span>
+<span id="cb4-26"><a href="process-data.html#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="process-data.html#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co"># get all folders where data from high-risk players are saved</span></span>
+<span id="cb4-28"><a href="process-data.html#cb4-28" aria-hidden="true" tabindex="-1"></a>folders <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(<span class="st">&quot;../../data/raw/data_non_addict_players&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>, <span class="at">recursive =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-29"><a href="process-data.html#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="process-data.html#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co"># get all file names</span></span>
+<span id="cb4-31"><a href="process-data.html#cb4-31" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">paste0</span>(folders, <span class="st">&quot;/rounds_data.csv&quot;</span>)</span>
+<span id="cb4-32"><a href="process-data.html#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="process-data.html#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co"># read csv files</span></span>
+<span id="cb4-34"><a href="process-data.html#cb4-34" aria-hidden="true" tabindex="-1"></a>d_low_risk <span class="ot">&lt;-</span> files <span class="sc">%&gt;%</span></span>
+<span id="cb4-35"><a href="process-data.html#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dfr</span>(<span class="sc">~</span><span class="fu">read_csv</span>(.x, <span class="at">skip =</span> <span class="dv">1</span>,</span>
+<span id="cb4-36"><a href="process-data.html#cb4-36" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">&quot;id_player&quot;</span>, <span class="st">&quot;id_session&quot;</span>, <span class="st">&quot;id_round&quot;</span>, <span class="st">&quot;stake&quot;</span>, <span class="st">&quot;win&quot;</span>, </span>
+<span id="cb4-37"><a href="process-data.html#cb4-37" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;rt_start&quot;</span>, <span class="st">&quot;rt1&quot;</span>, <span class="st">&quot;rt2&quot;</span>, <span class="st">&quot;rt3&quot;</span>, <span class="st">&quot;rt4&quot;</span>, <span class="st">&quot;rt5&quot;</span>, <span class="st">&quot;rt6&quot;</span>, <span class="st">&quot;rt7&quot;</span>, <span class="st">&quot;rt8&quot;</span>, </span>
+<span id="cb4-38"><a href="process-data.html#cb4-38" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;rt9&quot;</span>, <span class="st">&quot;rt10&quot;</span>, <span class="st">&quot;rt11&quot;</span>, <span class="st">&quot;rt12&quot;</span>, <span class="st">&quot;bonus&quot;</span>),</span>
+<span id="cb4-39"><a href="process-data.html#cb4-39" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col_types =</span>  <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>())))</span>
+<span id="cb4-40"><a href="process-data.html#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="process-data.html#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="process-data.html#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co"># load some demographic data </span></span>
+<span id="cb4-43"><a href="process-data.html#cb4-43" aria-hidden="true" tabindex="-1"></a>d_low_risk_demo <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;../../data/raw/meta_data_non_addict_players.csv&quot;</span>, <span class="at">delim =</span> <span class="st">&quot;;&quot;</span>,</span>
+<span id="cb4-44"><a href="process-data.html#cb4-44" aria-hidden="true" tabindex="-1"></a>                              <span class="at">col_types =</span> <span class="fu">cols</span>(<span class="at">.default =</span> <span class="fu">col_character</span>()))</span>
+<span id="cb4-45"><a href="process-data.html#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="process-data.html#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co"># add demographic information to the main data frame</span></span>
+<span id="cb4-47"><a href="process-data.html#cb4-47" aria-hidden="true" tabindex="-1"></a>d_low_risk <span class="ot">&lt;-</span> d_low_risk <span class="sc">%&gt;%</span></span>
+<span id="cb4-48"><a href="process-data.html#cb4-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(d_low_risk_demo, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;id_player&quot;</span> <span class="ot">=</span> <span class="st">&quot;id&quot;</span>))</span>
+<span id="cb4-49"><a href="process-data.html#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="process-data.html#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="do">#### quality checks ####</span></span>
+<span id="cb4-51"><a href="process-data.html#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="process-data.html#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="co"># check if the two groups consist of different players</span></span>
+<span id="cb4-53"><a href="process-data.html#cb4-53" aria-hidden="true" tabindex="-1"></a>high_risk_players <span class="ot">&lt;-</span> <span class="fu">unique</span>(d_high_risk<span class="sc">$</span>id_player)</span>
+<span id="cb4-54"><a href="process-data.html#cb4-54" aria-hidden="true" tabindex="-1"></a>low_risk_players <span class="ot">&lt;-</span> <span class="fu">unique</span>(d_low_risk<span class="sc">$</span>id_player)</span>
+<span id="cb4-55"><a href="process-data.html#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="process-data.html#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># all(high_risk_players %in% low_risk_players == FALSE)</span></span>
+<span id="cb4-57"><a href="process-data.html#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># all(low_risk_players %in% high_risk_players == FALSE)</span></span>
+<span id="cb4-58"><a href="process-data.html#cb4-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-59"><a href="process-data.html#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co"># both commands above return TRUE, showing that </span></span>
+<span id="cb4-60"><a href="process-data.html#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># the two groups all have different anonymous player IDs</span></span>
+<span id="cb4-61"><a href="process-data.html#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># suggesting that indeed that they consist of different players</span></span>
+<span id="cb4-62"><a href="process-data.html#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="process-data.html#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="do">#### combine data ####</span></span>
+<span id="cb4-64"><a href="process-data.html#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="process-data.html#cb4-65" aria-hidden="true" tabindex="-1"></a>d_low_risk <span class="ot">&lt;-</span> d_low_risk <span class="sc">%&gt;%</span></span>
+<span id="cb4-66"><a href="process-data.html#cb4-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-67"><a href="process-data.html#cb4-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add group name,</span></span>
+<span id="cb4-68"><a href="process-data.html#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="st">&quot;Low-Risk&quot;</span>,</span>
+<span id="cb4-69"><a href="process-data.html#cb4-69" aria-hidden="true" tabindex="-1"></a>    <span class="co"># low-risk players all have a risk level of 0</span></span>
+<span id="cb4-70"><a href="process-data.html#cb4-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">level =</span> <span class="dv">0</span></span>
+<span id="cb4-71"><a href="process-data.html#cb4-71" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-72"><a href="process-data.html#cb4-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(group, level, <span class="fu">everything</span>())</span>
+<span id="cb4-73"><a href="process-data.html#cb4-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-74"><a href="process-data.html#cb4-74" aria-hidden="true" tabindex="-1"></a>d_high_risk <span class="ot">&lt;-</span> d_high_risk <span class="sc">%&gt;%</span></span>
+<span id="cb4-75"><a href="process-data.html#cb4-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-76"><a href="process-data.html#cb4-76" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add group name,</span></span>
+<span id="cb4-77"><a href="process-data.html#cb4-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="st">&quot;High-Risk&quot;</span></span>
+<span id="cb4-78"><a href="process-data.html#cb4-78" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-79"><a href="process-data.html#cb4-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(group, level, <span class="fu">everything</span>())</span>
+<span id="cb4-80"><a href="process-data.html#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="process-data.html#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="co"># combine data from both groups</span></span>
+<span id="cb4-82"><a href="process-data.html#cb4-82" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">rbind</span>(d_high_risk, d_low_risk)</span>
+<span id="cb4-83"><a href="process-data.html#cb4-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-84"><a href="process-data.html#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the original two data frames</span></span>
+<span id="cb4-85"><a href="process-data.html#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(d_high_risk)</span>
+<span id="cb4-86"><a href="process-data.html#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(d_low_risk)</span>
+<span id="cb4-87"><a href="process-data.html#cb4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-88"><a href="process-data.html#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="do">#### clean data ####</span></span>
+<span id="cb4-89"><a href="process-data.html#cb4-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-90"><a href="process-data.html#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="co"># change player id, session id and round id into integers</span></span>
+<span id="cb4-91"><a href="process-data.html#cb4-91" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb4-92"><a href="process-data.html#cb4-92" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each player gets an unique number, starting from 1</span></span>
+<span id="cb4-93"><a href="process-data.html#cb4-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id_player =</span> <span class="fu">match</span>(id_player, <span class="fu">unique</span>(id_player))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-94"><a href="process-data.html#cb4-94" aria-hidden="true" tabindex="-1"></a>  <span class="co"># within each player, each session gets an unique number, starting from 1 </span></span>
+<span id="cb4-95"><a href="process-data.html#cb4-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb4-96"><a href="process-data.html#cb4-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id_session =</span> <span class="fu">match</span>(id_session, <span class="fu">unique</span>(id_session))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-97"><a href="process-data.html#cb4-97" aria-hidden="true" tabindex="-1"></a>  <span class="co"># each round within each session gets an unique number, starting from 1</span></span>
+<span id="cb4-98"><a href="process-data.html#cb4-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player, id_session) <span class="sc">%&gt;%</span></span>
+<span id="cb4-99"><a href="process-data.html#cb4-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id_round =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb4-100"><a href="process-data.html#cb4-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb4-101"><a href="process-data.html#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-102"><a href="process-data.html#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="co"># change numeric variables (stake, win, rts etc.) into numeric</span></span>
+<span id="cb4-103"><a href="process-data.html#cb4-103" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb4-104"><a href="process-data.html#cb4-104" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-105"><a href="process-data.html#cb4-105" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(stake<span class="sc">:</span>rt12, as.numeric),</span>
+<span id="cb4-106"><a href="process-data.html#cb4-106" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(<span class="fu">c</span>(level, age, income), as.numeric)</span>
+<span id="cb4-107"><a href="process-data.html#cb4-107" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-108"><a href="process-data.html#cb4-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-109"><a href="process-data.html#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="co"># create new variables for the stake, win, and whether there is bonus or not on the previous round</span></span>
+<span id="cb4-110"><a href="process-data.html#cb4-110" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb4-111"><a href="process-data.html#cb4-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player, id_session) <span class="sc">%&gt;%</span></span>
+<span id="cb4-112"><a href="process-data.html#cb4-112" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-113"><a href="process-data.html#cb4-113" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_stake =</span> <span class="fu">lag</span>(stake),</span>
+<span id="cb4-114"><a href="process-data.html#cb4-114" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_win =</span> <span class="fu">lag</span>(win),</span>
+<span id="cb4-115"><a href="process-data.html#cb4-115" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_bonus =</span> <span class="fu">lag</span>(bonus)</span>
+<span id="cb4-116"><a href="process-data.html#cb4-116" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb4-117"><a href="process-data.html#cb4-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div>
+<div id="player-and-play-behavior" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Player and play behavior</h2>
+<div id="descriptive_data.csv" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> descriptive_data.csv</h3>
+<p>First, we process the data to get descriptive data on the players and their general play behaviors.</p>
+<p>The <code>descriptive_data.csv</code> file contains the following variables.</p>
+<ul>
+<li>group: the group to which a player belongs, High-Risk or Low-Risk.</li>
+<li>id_player: the anonymous id of a player.</li>
+<li>age: age of a player.</li>
+<li>gender: gender of a player, Female or Male.</li>
+<li>risk_0: whether the player receives a risk level of 0 in the data, 1 = yes, 0 = no.</li>
+<li>risk_3: whether the player receives a risk level of 3 in the data, 1 = yes, 0 = no.</li>
+<li>risk_4: whether the player receives a risk level of 4 in the data, 1 = yes, 0 = no.</li>
+<li>risk_5: whether the player receives a risk level of 5 in the data, 1 = yes, 0 = no.</li>
+<li>n_session: the total number of sessions played.</li>
+<li>n_round_total: the total number of rounds played.</li>
+<li>n_round_mean: the mean number of rounds played per session.</li>
+<li>n_round_median: the median number of rounds played per session.</li>
+<li>bet_max: the maximum bet size across all rounds, in euro.</li>
+<li>bet_min: the minimum bet size across all rounds, in euro.</li>
+<li>bet_mean: the mean bet size across all rounds, in euro.</li>
+<li>bet_median: the median bet size across all rounds, in euro.</li>
+<li>win_prob: the probability of winning (%) across all rounds.</li>
+<li>win_max: the maximum amount of win on rounds when players win, in euro. Win defined as the win amount minus the stake amount.</li>
+<li>win_min: the minimum amount of win on rounds when players win, in euro.</li>
+<li>win_mean: the mean amount of win on rounds when players win, in euro.</li>
+<li>win_median: the median amount of win on rounds when players win, in euro.</li>
+<li>loss_max: the maximum amount of loss on rounds when players lose, in euro. Loss amount equals the stake amount.</li>
+<li>loss_min: the minimum amount of loss on rounds when players lose, in euro.</li>
+<li>loss_mean: the mean amount of loss on rounds when players lose, in euro.</li>
+<li>loss_median: the median amount of loss on rounds when players lose, in euro.</li>
+<li>total_spent: the total amount of money spent (i.e., lost), in euro. A negative value indicates that players overall won money.</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="process-data.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get the age and gender of each player</span></span>
+<span id="cb5-2"><a href="process-data.html#cb5-2" aria-hidden="true" tabindex="-1"></a>age_gender <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="process-data.html#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="process-data.html#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="process-data.html#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gender =</span> <span class="fu">recode</span>(gender, <span class="at">F =</span> <span class="st">&quot;Female&quot;</span>, <span class="at">M =</span> <span class="st">&quot;Male&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="process-data.html#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(group, id_player, age, gender)</span>
+<span id="cb5-7"><a href="process-data.html#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="process-data.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># get the risk level(s) of each player</span></span>
+<span id="cb5-9"><a href="process-data.html#cb5-9" aria-hidden="true" tabindex="-1"></a>risk_level_0 <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-10"><a href="process-data.html#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(level <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="process-data.html#cb5-11" aria-hidden="true" tabindex="-1"></a>  .<span class="sc">$</span>id_player <span class="sc">%&gt;%</span> unique</span>
+<span id="cb5-12"><a href="process-data.html#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="process-data.html#cb5-13" aria-hidden="true" tabindex="-1"></a>risk_level_3 <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-14"><a href="process-data.html#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(level <span class="sc">==</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-15"><a href="process-data.html#cb5-15" aria-hidden="true" tabindex="-1"></a>  .<span class="sc">$</span>id_player <span class="sc">%&gt;%</span> unique</span>
+<span id="cb5-16"><a href="process-data.html#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="process-data.html#cb5-17" aria-hidden="true" tabindex="-1"></a>risk_level_4 <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-18"><a href="process-data.html#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(level <span class="sc">==</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-19"><a href="process-data.html#cb5-19" aria-hidden="true" tabindex="-1"></a>  .<span class="sc">$</span>id_player <span class="sc">%&gt;%</span> unique</span>
+<span id="cb5-20"><a href="process-data.html#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="process-data.html#cb5-21" aria-hidden="true" tabindex="-1"></a>risk_level_5 <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-22"><a href="process-data.html#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(level <span class="sc">==</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-23"><a href="process-data.html#cb5-23" aria-hidden="true" tabindex="-1"></a>  .<span class="sc">$</span>id_player <span class="sc">%&gt;%</span> unique</span>
+<span id="cb5-24"><a href="process-data.html#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="process-data.html#cb5-25" aria-hidden="true" tabindex="-1"></a>risk_levels <span class="ot">&lt;-</span> age_gender <span class="sc">%&gt;%</span></span>
+<span id="cb5-26"><a href="process-data.html#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-27"><a href="process-data.html#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">risk_0 =</span> <span class="fu">ifelse</span>(id_player <span class="sc">%in%</span> risk_level_0, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb5-28"><a href="process-data.html#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">risk_3 =</span> <span class="fu">ifelse</span>(id_player <span class="sc">%in%</span> risk_level_3, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb5-29"><a href="process-data.html#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">risk_4 =</span> <span class="fu">ifelse</span>(id_player <span class="sc">%in%</span> risk_level_4, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb5-30"><a href="process-data.html#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">risk_5 =</span> <span class="fu">ifelse</span>(id_player <span class="sc">%in%</span> risk_level_5, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb5-31"><a href="process-data.html#cb5-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-32"><a href="process-data.html#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, risk_0, risk_3, risk_4, risk_5)</span>
+<span id="cb5-33"><a href="process-data.html#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="process-data.html#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co"># count the number of sessions and rounds for each player</span></span>
+<span id="cb5-35"><a href="process-data.html#cb5-35" aria-hidden="true" tabindex="-1"></a>rounds <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-36"><a href="process-data.html#cb5-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># count the number of rounds in each session</span></span>
+<span id="cb5-37"><a href="process-data.html#cb5-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(id_player, id_session) <span class="sc">%&gt;%</span></span>
+<span id="cb5-38"><a href="process-data.html#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># count for each player:</span></span>
+<span id="cb5-39"><a href="process-data.html#cb5-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-40"><a href="process-data.html#cb5-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-41"><a href="process-data.html#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_session =</span> <span class="fu">n</span>(), <span class="co"># the total number of sessions</span></span>
+<span id="cb5-42"><a href="process-data.html#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_total =</span> <span class="fu">sum</span>(n), <span class="co"># the total number of rounds (all sessions combined)</span></span>
+<span id="cb5-43"><a href="process-data.html#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_mean =</span>  <span class="fu">mean</span>(n), <span class="co"># the mean number of rounds per session</span></span>
+<span id="cb5-44"><a href="process-data.html#cb5-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_median =</span> <span class="fu">median</span>(n) <span class="co"># the median number of rounds per session</span></span>
+<span id="cb5-45"><a href="process-data.html#cb5-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-46"><a href="process-data.html#cb5-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, n_session, n_round_total, n_round_mean, n_round_median)</span>
+<span id="cb5-47"><a href="process-data.html#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="process-data.html#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co"># for each player, calculate the max, min, mean and median of stakes across all rounds</span></span>
+<span id="cb5-49"><a href="process-data.html#cb5-49" aria-hidden="true" tabindex="-1"></a>bets <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-50"><a href="process-data.html#cb5-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-51"><a href="process-data.html#cb5-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-52"><a href="process-data.html#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">bet_max =</span> <span class="fu">max</span>(stake),</span>
+<span id="cb5-53"><a href="process-data.html#cb5-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">bet_min =</span> <span class="fu">min</span>(stake),</span>
+<span id="cb5-54"><a href="process-data.html#cb5-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">bet_mean =</span> <span class="fu">mean</span>(stake),</span>
+<span id="cb5-55"><a href="process-data.html#cb5-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">bet_median =</span> <span class="fu">median</span>(stake)</span>
+<span id="cb5-56"><a href="process-data.html#cb5-56" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-57"><a href="process-data.html#cb5-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, bet_max, bet_min, bet_mean, bet_median)</span>
+<span id="cb5-58"><a href="process-data.html#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="process-data.html#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="co"># for each player, calculate their winning probability, the min, max, mean and median win amount</span></span>
+<span id="cb5-60"><a href="process-data.html#cb5-60" aria-hidden="true" tabindex="-1"></a>win_prob <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-61"><a href="process-data.html#cb5-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-62"><a href="process-data.html#cb5-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">win_prob =</span> <span class="fu">mean</span>(win <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-63"><a href="process-data.html#cb5-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, win_prob)</span>
+<span id="cb5-64"><a href="process-data.html#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-65"><a href="process-data.html#cb5-65" aria-hidden="true" tabindex="-1"></a>wins <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-66"><a href="process-data.html#cb5-66" aria-hidden="true" tabindex="-1"></a>  <span class="co"># select winning rounds</span></span>
+<span id="cb5-67"><a href="process-data.html#cb5-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(win <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-68"><a href="process-data.html#cb5-68" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for each player, calculate the max, min, mean and median win amount</span></span>
+<span id="cb5-69"><a href="process-data.html#cb5-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the real win amount is the win amount displayed by the game, minus</span></span>
+<span id="cb5-70"><a href="process-data.html#cb5-70" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the stake</span></span>
+<span id="cb5-71"><a href="process-data.html#cb5-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">win =</span> win <span class="sc">-</span> stake) <span class="sc">%&gt;%</span></span>
+<span id="cb5-72"><a href="process-data.html#cb5-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-73"><a href="process-data.html#cb5-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-74"><a href="process-data.html#cb5-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_max =</span> <span class="fu">max</span>(win),</span>
+<span id="cb5-75"><a href="process-data.html#cb5-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_min =</span> <span class="fu">min</span>(win),</span>
+<span id="cb5-76"><a href="process-data.html#cb5-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_mean =</span> <span class="fu">mean</span>(win),</span>
+<span id="cb5-77"><a href="process-data.html#cb5-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_median =</span> <span class="fu">median</span>(win)</span>
+<span id="cb5-78"><a href="process-data.html#cb5-78" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-79"><a href="process-data.html#cb5-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, win_max, win_min, win_mean, win_median)</span>
+<span id="cb5-80"><a href="process-data.html#cb5-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-81"><a href="process-data.html#cb5-81" aria-hidden="true" tabindex="-1"></a><span class="co"># on the rounds where players lost</span></span>
+<span id="cb5-82"><a href="process-data.html#cb5-82" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate their max, min, mean, median and total loss amount</span></span>
+<span id="cb5-83"><a href="process-data.html#cb5-83" aria-hidden="true" tabindex="-1"></a>losses <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-84"><a href="process-data.html#cb5-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># select losing rounds</span></span>
+<span id="cb5-85"><a href="process-data.html#cb5-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(win <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-86"><a href="process-data.html#cb5-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># loss the same as the stake</span></span>
+<span id="cb5-87"><a href="process-data.html#cb5-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">loss =</span> stake) <span class="sc">%&gt;%</span></span>
+<span id="cb5-88"><a href="process-data.html#cb5-88" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-89"><a href="process-data.html#cb5-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-90"><a href="process-data.html#cb5-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_max =</span> <span class="fu">max</span>(loss),</span>
+<span id="cb5-91"><a href="process-data.html#cb5-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_min =</span> <span class="fu">min</span>(loss),</span>
+<span id="cb5-92"><a href="process-data.html#cb5-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_mean =</span> <span class="fu">mean</span>(loss),</span>
+<span id="cb5-93"><a href="process-data.html#cb5-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">loss_median =</span> <span class="fu">median</span>(loss),</span>
+<span id="cb5-94"><a href="process-data.html#cb5-94" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-95"><a href="process-data.html#cb5-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id_player, loss_max, loss_min, loss_mean, loss_median)</span>
+<span id="cb5-96"><a href="process-data.html#cb5-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-97"><a href="process-data.html#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="co"># for each player, calculate the total spent</span></span>
+<span id="cb5-98"><a href="process-data.html#cb5-98" aria-hidden="true" tabindex="-1"></a>total_spent <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb5-99"><a href="process-data.html#cb5-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">spent =</span> stake <span class="sc">-</span> win) <span class="sc">%&gt;%</span></span>
+<span id="cb5-100"><a href="process-data.html#cb5-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb5-101"><a href="process-data.html#cb5-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_spent =</span> <span class="fu">sum</span>(spent))</span>
+<span id="cb5-102"><a href="process-data.html#cb5-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-103"><a href="process-data.html#cb5-103" aria-hidden="true" tabindex="-1"></a><span class="co"># put all data frames together</span></span>
+<span id="cb5-104"><a href="process-data.html#cb5-104" aria-hidden="true" tabindex="-1"></a>d_descriptive <span class="ot">&lt;-</span> age_gender <span class="sc">%&gt;%</span></span>
+<span id="cb5-105"><a href="process-data.html#cb5-105" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(risk_levels, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-106"><a href="process-data.html#cb5-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(rounds, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-107"><a href="process-data.html#cb5-107" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(bets, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-108"><a href="process-data.html#cb5-108" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(win_prob, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-109"><a href="process-data.html#cb5-109" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(wins, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-110"><a href="process-data.html#cb5-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(losses, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-111"><a href="process-data.html#cb5-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(total_spent, <span class="at">by =</span> <span class="st">&quot;id_player&quot;</span>)</span>
+<span id="cb5-112"><a href="process-data.html#cb5-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-113"><a href="process-data.html#cb5-113" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frames as a csv file</span></span>
+<span id="cb5-114"><a href="process-data.html#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(d_descriptive, <span class="st">&quot;../../data/processed/descriptive_data.csv&quot;</span>)</span>
+<span id="cb5-115"><a href="process-data.html#cb5-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-116"><a href="process-data.html#cb5-116" aria-hidden="true" tabindex="-1"></a><span class="co"># remove data frames</span></span>
+<span id="cb5-117"><a href="process-data.html#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(age_gender, risk_levels, rounds, bets, win_prob, wins, losses, total_spent, d_descriptive)</span></code></pre></div>
+</div>
+<div id="sessions_count.csv" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> sessions_count.csv</h3>
+<p>To further characterize the play behavior, we count the number of rounds played in each session. For the high-risk and low-risk groups separately, we count the number of sessions that contained certain number of rounds (combined across all players in the same group). The data are saved in the <code>sessions_count.csv</code> file, which contains the following variables.</p>
+<ul>
+<li>group: the group to which players belong, High-Risk or Low-Risk.</li>
+<li>n_round_bin: the number of rounds per session is divided into bins. (a, b] means a certain session has &gt; a and &lt;= b rounds. Note that bin widths become larger for larger values.</li>
+<li>n_round_label: a numeric label for each bin, from 1 till 34 (included for later plotting).</li>
+<li>n_session: the number of sessions that contain certain numbers of rounds, combined across all players in the same group. E.g, for the High-Risk group, 13314 sessions fall into the (0,10] bin, meaning that for all players in the High-Risk group, 13314 sessions contain &gt; 0 and &lt;= 10 rounds.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="process-data.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we count the number of sessions that contain certain number of rounds</span></span>
+<span id="cb6-2"><a href="process-data.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># across all players, for the high-risk and low-risk groups separately</span></span>
+<span id="cb6-3"><a href="process-data.html#cb6-3" aria-hidden="true" tabindex="-1"></a>sessions_count <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="process-data.html#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># count the number of rounds in each session</span></span>
+<span id="cb6-5"><a href="process-data.html#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(group, id_player, id_session) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="process-data.html#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># divide the number of rounds into into bins</span></span>
+<span id="cb6-7"><a href="process-data.html#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-8"><a href="process-data.html#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_bin =</span> <span class="fu">cut</span>(n, <span class="at">breaks =</span> <span class="fu">c</span>((<span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">*</span><span class="dv">10</span>, (<span class="dv">3</span><span class="sc">:</span><span class="dv">10</span>)<span class="sc">*</span><span class="dv">100</span>, (<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>)<span class="sc">*</span><span class="dv">1000</span>)),</span>
+<span id="cb6-9"><a href="process-data.html#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_label =</span> <span class="fu">cut</span>(n, <span class="at">breaks =</span> <span class="fu">c</span>((<span class="dv">0</span><span class="sc">:</span><span class="dv">20</span>)<span class="sc">*</span><span class="dv">10</span>, (<span class="dv">3</span><span class="sc">:</span><span class="dv">10</span>)<span class="sc">*</span><span class="dv">100</span>, (<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>)<span class="sc">*</span><span class="dv">1000</span>), <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">34</span>)</span>
+<span id="cb6-10"><a href="process-data.html#cb6-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="process-data.html#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculate the number of sessions with certain numbers of rounds</span></span>
+<span id="cb6-12"><a href="process-data.html#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(group, n_round_bin, n_round_label, <span class="at">name =</span> <span class="st">&quot;n_session&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="process-data.html#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_round_label =</span> <span class="fu">as.numeric</span>(n_round_label)) </span>
+<span id="cb6-14"><a href="process-data.html#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="process-data.html#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frame as a csv file</span></span>
+<span id="cb6-16"><a href="process-data.html#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(sessions_count, <span class="st">&quot;../../data/processed/sessions_count.csv&quot;</span>)</span>
+<span id="cb6-17"><a href="process-data.html#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="process-data.html#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># remove data frame(s)</span></span>
+<span id="cb6-19"><a href="process-data.html#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(sessions_count)</span></code></pre></div>
+</div>
+<div id="bet_counts.csv" class="section level3" number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> bet_counts.csv</h3>
+<p>On each round, players can choose one of ten different bet sizes (from 0.25 euro to 20 euro). To characterize the betting patterns, for each player we count the number of rounds where they chose a certain bet size. The data are saved in the <code>bet_counts.csv</code> file, which contains the following variables.</p>
+<ul>
+<li>group: the group to which a player belongs, High-Risk or Low-Risk.</li>
+<li>id_player: the anonymous id of a player.</li>
+<li>stake: the amount of money a player bets on a round, from 0.25 till 20, in euro.</li>
+<li>n_round: the number of rounds where a player chose a certain bet size.</li>
+<li>n_round_total: the total number of rounds played by each player.</li>
+<li>prop: the relative proportion of choosing a certain bet size for each player, from 0 (%) till 100 (%).</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="process-data.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get all the unique levels of bet sizes</span></span>
+<span id="cb7-2"><a href="process-data.html#cb7-2" aria-hidden="true" tabindex="-1"></a>bet_sizes <span class="ot">&lt;-</span> <span class="fu">unique</span>(d<span class="sc">$</span>stake)</span>
+<span id="cb7-3"><a href="process-data.html#cb7-3" aria-hidden="true" tabindex="-1"></a>bet_sizes <span class="ot">&lt;-</span> <span class="fu">sort</span>(bet_sizes, <span class="at">decreasing =</span> F)</span>
+<span id="cb7-4"><a href="process-data.html#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="process-data.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># for each player, count how often each bet size is selected</span></span>
+<span id="cb7-6"><a href="process-data.html#cb7-6" aria-hidden="true" tabindex="-1"></a>bets_count <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="process-data.html#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># turn the variable stake into a factor with all ten 10 possible levels</span></span>
+<span id="cb7-8"><a href="process-data.html#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">stake =</span> <span class="fu">factor</span>(stake, <span class="at">levels =</span> bet_sizes)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="process-data.html#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for each player, count the number of rounds with a certain stake size</span></span>
+<span id="cb7-10"><a href="process-data.html#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(group, id_player, stake, <span class="at">.drop =</span> F, <span class="at">name =</span> <span class="st">&quot;n_round&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-11"><a href="process-data.html#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculate the total number of rounds for each player</span></span>
+<span id="cb7-12"><a href="process-data.html#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># and based on that, the relative proportion of choosing a certain stake size</span></span>
+<span id="cb7-13"><a href="process-data.html#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb7-14"><a href="process-data.html#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-15"><a href="process-data.html#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_total =</span> <span class="fu">sum</span>(n_round), <span class="co"># the total number of rounds</span></span>
+<span id="cb7-16"><a href="process-data.html#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop =</span> n_round<span class="sc">/</span>n_round_total <span class="sc">*</span> <span class="dv">100</span>  <span class="co"># the relative proportion of choosing a certain bet</span></span>
+<span id="cb7-17"><a href="process-data.html#cb7-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-18"><a href="process-data.html#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb7-19"><a href="process-data.html#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="process-data.html#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frame as a csv file</span></span>
+<span id="cb7-21"><a href="process-data.html#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(bets_count, <span class="st">&quot;../../data/processed/bets_count.csv&quot;</span>)</span>
+<span id="cb7-22"><a href="process-data.html#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="process-data.html#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co"># remove data frame(s)</span></span>
+<span id="cb7-24"><a href="process-data.html#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(bets_count)</span></code></pre></div>
+</div>
+</div>
+<div id="stop" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Stop</h2>
+<p>After each round, players can choose either to continue playing, or stop. Here we prepare data on whether the decision to stop is influenced by the prior outcome (win vs. loss) or not.</p>
+<div id="stop.csv" class="section level3" number="3.2.1">
+<h3><span class="header-section-number">3.2.1</span> stop.csv</h3>
+<p>For this analysis, we calculate the probability of winning on the last round of each session, as well as the overall probability of winning with all rounds combined, for each player. The idea is that if players made the decision to stop regardless of the outcome of a game, the overall probability of winning would be the same for the last round of each session and all rounds combined. However, if players were more likely to stop after a win, the last round would contain more wins than all rounds combined; conversely, if players were more likely to stop after a loss, the last round would contain more losses (i.e., a lower winning probability) than all rounds combined. The processed data are saved in the <code>stop.csv</code> file, with the following variables.</p>
+<ul>
+<li>group: the group to which a player belongs, High-Risk or Low-Risk.</li>
+<li>id_player: the anonymous id of a player.</li>
+<li>round_pos: whether a certain round is at the end of a session (‘end’) or all rounds combined (‘overall’).</li>
+<li>total_count: the total number of rounds in each condition, either at the end of a session or all rounds combined.</li>
+<li>win_count: the total number of rounds on which players won in each condition.</li>
+<li>win_prob: the probability of winning in each condition, calculated based on the previous two counts, from 0 (%) to 100 (%).</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="process-data.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the overall number of rounds and the probability of winning for each player</span></span>
+<span id="cb8-2"><a href="process-data.html#cb8-2" aria-hidden="true" tabindex="-1"></a>win_overall <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="process-data.html#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">outcome =</span> <span class="fu">ifelse</span>(win <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;loss&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="process-data.html#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="process-data.html#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb8-6"><a href="process-data.html#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_count =</span> <span class="fu">n</span>(),</span>
+<span id="cb8-7"><a href="process-data.html#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_count =</span> <span class="fu">sum</span>(outcome <span class="sc">==</span> <span class="st">&quot;win&quot;</span>),</span>
+<span id="cb8-8"><a href="process-data.html#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_prob =</span> win_count<span class="sc">/</span>total_count <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb8-9"><a href="process-data.html#cb8-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="process-data.html#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-11"><a href="process-data.html#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">round_pos =</span> <span class="st">&quot;overall&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-12"><a href="process-data.html#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(group, id_player, round_pos, total_count, win_count, win_prob)</span>
+<span id="cb8-13"><a href="process-data.html#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="process-data.html#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the number of rounds that occur at the end of a session</span></span>
+<span id="cb8-15"><a href="process-data.html#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># and the probability of winning in this subset of rounds</span></span>
+<span id="cb8-16"><a href="process-data.html#cb8-16" aria-hidden="true" tabindex="-1"></a>win_end_session <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb8-17"><a href="process-data.html#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">outcome =</span> <span class="fu">ifelse</span>(win <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;loss&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-18"><a href="process-data.html#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player, id_session) <span class="sc">%&gt;%</span></span>
+<span id="cb8-19"><a href="process-data.html#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-20"><a href="process-data.html#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if a certain round has the largest id in a session</span></span>
+<span id="cb8-21"><a href="process-data.html#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># it means that round is the last one, and player ended the session afterwards</span></span>
+<span id="cb8-22"><a href="process-data.html#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">round_pos =</span> <span class="fu">ifelse</span>(id_round <span class="sc">==</span> <span class="fu">max</span>(id_round), <span class="st">&quot;end&quot;</span>, <span class="st">&quot;in&quot;</span>)</span>
+<span id="cb8-23"><a href="process-data.html#cb8-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-24"><a href="process-data.html#cb8-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(round_pos <span class="sc">==</span> <span class="st">&quot;end&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-25"><a href="process-data.html#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for each player, calculate the number of rounds and wins at the end of each session</span></span>
+<span id="cb8-26"><a href="process-data.html#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player, round_pos) <span class="sc">%&gt;%</span></span>
+<span id="cb8-27"><a href="process-data.html#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb8-28"><a href="process-data.html#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_count =</span> <span class="fu">n</span>(),</span>
+<span id="cb8-29"><a href="process-data.html#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_count =</span> <span class="fu">sum</span>(outcome <span class="sc">==</span> <span class="st">&quot;win&quot;</span>),</span>
+<span id="cb8-30"><a href="process-data.html#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">win_prob =</span> win_count<span class="sc">/</span>total_count <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb8-31"><a href="process-data.html#cb8-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-32"><a href="process-data.html#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(group, id_player, round_pos, total_count, win_count, win_prob)</span>
+<span id="cb8-33"><a href="process-data.html#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="process-data.html#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co"># combine the two data frames</span></span>
+<span id="cb8-35"><a href="process-data.html#cb8-35" aria-hidden="true" tabindex="-1"></a>stop <span class="ot">&lt;-</span> win_overall <span class="sc">%&gt;%</span></span>
+<span id="cb8-36"><a href="process-data.html#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(win_end_session) <span class="sc">%&gt;%</span></span>
+<span id="cb8-37"><a href="process-data.html#cb8-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(group, id_player)</span>
+<span id="cb8-38"><a href="process-data.html#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="process-data.html#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frame as a csv file</span></span>
+<span id="cb8-40"><a href="process-data.html#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(stop, <span class="st">&quot;../../data/processed/stop.csv&quot;</span>)</span>
+<span id="cb8-41"><a href="process-data.html#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-42"><a href="process-data.html#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co"># remove data frame(s)</span></span>
+<span id="cb8-43"><a href="process-data.html#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(stop, win_overall, win_end_session)</span></code></pre></div>
+</div>
+</div>
+<div id="stake-change" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Stake change</h2>
+<p>Players can change their stakes between rounds. We explore whether the probability of changing stakes is influenced by prior outcome, and how players changed stakes when they did change stakes (again, as a function of prior outcome).</p>
+<div id="stake_change.csv" class="section level3" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> stake_change.csv</h3>
+<p>Players can choose among 10 different levels of stake sizes (from 0.25 euro to 20 euro). Since we are interested in whether wins and losses may change the betting behavior, we exclude the first round of each session (i.e., these rounds have no prior outcomes). For the remaining data, we calculate the number of rounds that follow a win or a loss, and the probability of changing stakes.
+We also calculate the average change in stakes (in euro; a positive change score indicates increasing stake, while a negative change score indicates decreasing stake). Since players can only select one from ten levels of stakes, as a second measure of stake change, we transform the stake amounts into stake levels, with 1 being the lowest level of stake (0.25 euro) and 10 being the highest level of stake (20 euro). A change score is then calculated based on the levels (rather than the original amounts) of stakes. We calculate the average change in stake sizes and stake levels both for all rounds, and only on rounds where players did change stakes.</p>
+<p>The following variables are calculated and saved in the <code>stake_change.csv</code> file.</p>
+<ul>
+<li>group: the group to which a player belongs, High-Risk or Low-Risk.</li>
+<li>id_player: the anonymous id of a player.</li>
+<li>prev_outcome: the outcome on the previous round, win (win amount &gt; 0) or loss (win amount = 0).</li>
+<li>n_round: the total number of rounds following a win or a loss.</li>
+<li>n_round_change: the number of rounds where a player changed the stake.</li>
+<li>stake_change_prop: the proportion of rounds where players changed the stake (%).</li>
+<li>stake_change_size_overall: the average change in stake sizes in all rounds. A positive value indicates an increase in stake (euro).</li>
+<li>stake_change_level_overall: the average change in stake levels in all rounds. A positive value indicates an increase in stake level.</li>
+<li>stake_change_size: the average change in stake sizes when players did change the stake.</li>
+<li>stake_change_level: the average change in stake levels when players did change the stake.</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="process-data.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get all the unique levels of bet sizes</span></span>
+<span id="cb9-2"><a href="process-data.html#cb9-2" aria-hidden="true" tabindex="-1"></a>bet_sizes <span class="ot">&lt;-</span> <span class="fu">unique</span>(d<span class="sc">$</span>stake)</span>
+<span id="cb9-3"><a href="process-data.html#cb9-3" aria-hidden="true" tabindex="-1"></a>bet_sizes <span class="ot">&lt;-</span> <span class="fu">sort</span>(bet_sizes, <span class="at">decreasing =</span> F)</span>
+<span id="cb9-4"><a href="process-data.html#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="process-data.html#cb9-5" aria-hidden="true" tabindex="-1"></a>stake_change <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="process-data.html#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-7"><a href="process-data.html#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_outcome =</span> <span class="fu">ifelse</span>(prev_win <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;loss&quot;</span>),</span>
+<span id="cb9-8"><a href="process-data.html#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create a new variable for stake level</span></span>
+<span id="cb9-9"><a href="process-data.html#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_level =</span> <span class="fu">factor</span>(stake, <span class="at">levels =</span> bet_sizes),</span>
+<span id="cb9-10"><a href="process-data.html#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_level =</span> <span class="fu">as.numeric</span>(stake_level),</span>
+<span id="cb9-11"><a href="process-data.html#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create a new variable for the previous stake</span></span>
+<span id="cb9-12"><a href="process-data.html#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_stake_level =</span> <span class="fu">lag</span>(stake_level),</span>
+<span id="cb9-13"><a href="process-data.html#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the change in stakes between two rounds</span></span>
+<span id="cb9-14"><a href="process-data.html#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># a positive value indicates an increase in stake</span></span>
+<span id="cb9-15"><a href="process-data.html#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_size =</span> stake <span class="sc">-</span> prev_stake,</span>
+<span id="cb9-16"><a href="process-data.html#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># do the same for the change in stake level</span></span>
+<span id="cb9-17"><a href="process-data.html#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_level =</span> stake_level <span class="sc">-</span> prev_stake_level</span>
+<span id="cb9-18"><a href="process-data.html#cb9-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-19"><a href="process-data.html#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(prev_outcome)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-20"><a href="process-data.html#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb9-21"><a href="process-data.html#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="process-data.html#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the probability of changing stakes and the average change</span></span>
+<span id="cb9-23"><a href="process-data.html#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co"># in stake sizes and levels with all rounds</span></span>
+<span id="cb9-24"><a href="process-data.html#cb9-24" aria-hidden="true" tabindex="-1"></a>stake_change_prop <span class="ot">&lt;-</span> stake_change <span class="sc">%&gt;%</span></span>
+<span id="cb9-25"><a href="process-data.html#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player, prev_outcome) <span class="sc">%&gt;%</span></span>
+<span id="cb9-26"><a href="process-data.html#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb9-27"><a href="process-data.html#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the total number of rounds across all sessions</span></span>
+<span id="cb9-28"><a href="process-data.html#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round =</span> <span class="fu">n</span>(),</span>
+<span id="cb9-29"><a href="process-data.html#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the total number of rounds when stakes did change</span></span>
+<span id="cb9-30"><a href="process-data.html#cb9-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round_change =</span> <span class="fu">sum</span>(stake_change_size <span class="sc">!=</span> <span class="dv">0</span>),</span>
+<span id="cb9-31"><a href="process-data.html#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># probability of changing stakes</span></span>
+<span id="cb9-32"><a href="process-data.html#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_prop =</span> <span class="fu">mean</span>(stake_change_size <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb9-33"><a href="process-data.html#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the overall change in stake sizes and levels</span></span>
+<span id="cb9-34"><a href="process-data.html#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_size_overall =</span> <span class="fu">mean</span>(stake_change_size),</span>
+<span id="cb9-35"><a href="process-data.html#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_level_overall =</span> <span class="fu">mean</span>(stake_change_level)</span>
+<span id="cb9-36"><a href="process-data.html#cb9-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-37"><a href="process-data.html#cb9-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb9-38"><a href="process-data.html#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="process-data.html#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the changes in stakes when players did change stakes</span></span>
+<span id="cb9-40"><a href="process-data.html#cb9-40" aria-hidden="true" tabindex="-1"></a>stake_change_sizes <span class="ot">&lt;-</span> stake_change <span class="sc">%&gt;%</span></span>
+<span id="cb9-41"><a href="process-data.html#cb9-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># only include rounds where players did change stakes</span></span>
+<span id="cb9-42"><a href="process-data.html#cb9-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(stake_change_size <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-43"><a href="process-data.html#cb9-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player, prev_outcome) <span class="sc">%&gt;%</span></span>
+<span id="cb9-44"><a href="process-data.html#cb9-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb9-45"><a href="process-data.html#cb9-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_size =</span> <span class="fu">mean</span>(stake_change_size),</span>
+<span id="cb9-46"><a href="process-data.html#cb9-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">stake_change_level =</span> <span class="fu">mean</span>(stake_change_level),</span>
+<span id="cb9-47"><a href="process-data.html#cb9-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-48"><a href="process-data.html#cb9-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb9-49"><a href="process-data.html#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="process-data.html#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="co"># combine both data frames</span></span>
+<span id="cb9-51"><a href="process-data.html#cb9-51" aria-hidden="true" tabindex="-1"></a>stake_change_combined <span class="ot">&lt;-</span> stake_change_prop <span class="sc">%&gt;%</span></span>
+<span id="cb9-52"><a href="process-data.html#cb9-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(stake_change_sizes, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;group&quot;</span>, <span class="st">&quot;id_player&quot;</span>, <span class="st">&quot;prev_outcome&quot;</span>))</span>
+<span id="cb9-53"><a href="process-data.html#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="process-data.html#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frame as a csv file</span></span>
+<span id="cb9-55"><a href="process-data.html#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(stake_change_combined, <span class="st">&quot;../../data/processed/stake_change.csv&quot;</span>)</span>
+<span id="cb9-56"><a href="process-data.html#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="process-data.html#cb9-57" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(stake_change, stake_change_prop, stake_change_sizes, stake_change_combined)</span></code></pre></div>
+</div>
+</div>
+<div id="speed-of-play" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Speed of play</h2>
+<p>Next we examine the speed of play, once players have decided to continue playing. For this analysis, we focus on the RT of putting in the first column as an indicator of the speed of play. For this analysis, we further exclude rounds where the RT of putting in the first column was at least 5000 milliseconds. RTs below 0 (potentially a recording error) are also excluded.</p>
+<div id="rt.csv" class="section level3" number="3.4.1">
+<h3><span class="header-section-number">3.4.1</span> rt.csv</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="process-data.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># number of rounds before exclusion</span></span>
+<span id="cb10-2"><a href="process-data.html#cb10-2" aria-hidden="true" tabindex="-1"></a>before <span class="ot">&lt;-</span> <span class="fu">nrow</span>(d)</span>
+<span id="cb10-3"><a href="process-data.html#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="process-data.html#cb10-4" aria-hidden="true" tabindex="-1"></a>d_after <span class="ot">&lt;-</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="process-data.html#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rt =</span> rt1) <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="process-data.html#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb10-7"><a href="process-data.html#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># exclude the first round of each session</span></span>
+<span id="cb10-8"><a href="process-data.html#cb10-8" aria-hidden="true" tabindex="-1"></a>    id_round <span class="sc">!=</span> <span class="dv">1</span>, </span>
+<span id="cb10-9"><a href="process-data.html#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># only keep trials where the RT of putting in the first column</span></span>
+<span id="cb10-10"><a href="process-data.html#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># is between 0 and 5000 milliseconds</span></span>
+<span id="cb10-11"><a href="process-data.html#cb10-11" aria-hidden="true" tabindex="-1"></a>    rt <span class="sc">&lt;</span> <span class="dv">5000</span>, rt <span class="sc">&gt;=</span> <span class="dv">0</span> </span>
+<span id="cb10-12"><a href="process-data.html#cb10-12" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb10-13"><a href="process-data.html#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="process-data.html#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate number of rounds after the exclusion</span></span>
+<span id="cb10-15"><a href="process-data.html#cb10-15" aria-hidden="true" tabindex="-1"></a>after <span class="ot">&lt;-</span> <span class="fu">nrow</span>(d_after)</span>
+<span id="cb10-16"><a href="process-data.html#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="process-data.html#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the proportion of data exclusion</span></span>
+<span id="cb10-18"><a href="process-data.html#cb10-18" aria-hidden="true" tabindex="-1"></a>removed <span class="ot">&lt;-</span> (before <span class="sc">-</span> after)<span class="sc">/</span>before <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div>
+<p>Players in total played 10370013 rounds. 160524 rounds were excluded after applying the exclusion criteria as listed above (1.5% of all rounds). For the remaining rounds, we calculate the number of rounds, and the mean RTs following wins and losses respectively. Since players differed in how quickly they generally responded, to control for the potential effects of general responding speeds, we further calculate the z score of each RT within each player. The mean RT z scores are further calculated for each player. The processed data are saved in the <code>rt.csv</code> file. The following variables are included.</p>
+<ul>
+<li>group: the group to which a player belongs, High-Risk or Low-Risk.</li>
+<li>id_player: the anonymous id of a player.</li>
+<li>prev_outcome: the outcome on the previous trial, win (win amount &gt; 0) or loss (win amount = 0).</li>
+<li>n_round: the number of remaining rounds following a win or a loss.</li>
+<li>rt_mean: the mean response time (of putting in the first column) after a win or a loss, in milliseconds.</li>
+<li>rt_z_mean: the mean of response time z score (of putting in the first column) after a win or a loss.</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="process-data.html#cb11-1" aria-hidden="true" tabindex="-1"></a>rt_data <span class="ot">&lt;-</span> d_after <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="process-data.html#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># calculate the following variables for each player</span></span>
+<span id="cb11-3"><a href="process-data.html#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="process-data.html#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-5"><a href="process-data.html#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">rt_z =</span> <span class="fu">scale</span>(rt),</span>
+<span id="cb11-6"><a href="process-data.html#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_outcome =</span> <span class="fu">ifelse</span>(prev_win <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;loss&quot;</span>) <span class="co"># the outcome of the previous round</span></span>
+<span id="cb11-7"><a href="process-data.html#cb11-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="process-data.html#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for rounds following wins and losses, calculate the total number</span></span>
+<span id="cb11-9"><a href="process-data.html#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># and the mean RTs (raw scores as well as z scores)</span></span>
+<span id="cb11-10"><a href="process-data.html#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group, id_player, prev_outcome) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="process-data.html#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb11-12"><a href="process-data.html#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_round =</span> <span class="fu">n</span>(), <span class="co"># number of rounds</span></span>
+<span id="cb11-13"><a href="process-data.html#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">rt_mean =</span> <span class="fu">mean</span>(rt), <span class="co"># the mean rt </span></span>
+<span id="cb11-14"><a href="process-data.html#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">rt_z_mean =</span> <span class="fu">mean</span>(rt_z) <span class="co"># the mean rt z score</span></span>
+<span id="cb11-15"><a href="process-data.html#cb11-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-16"><a href="process-data.html#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="process-data.html#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># save the data frame as a csv file</span></span>
+<span id="cb11-18"><a href="process-data.html#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(rt_data, <span class="st">&quot;../../data/processed/rt.csv&quot;</span>)</span>
+<span id="cb11-19"><a href="process-data.html#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="process-data.html#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(d_after, rt_data, d)</span></code></pre></div>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="libraries-and-session-info.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="descriptives.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null
+});
+});
+</script>
+
+</body>
+
+</html>

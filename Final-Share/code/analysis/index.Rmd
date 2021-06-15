@@ -1,0 +1,23 @@
+--- 
+title: "Winning and losing in online gambling"
+author: ""
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+---
+
+# Introduction
+
+In this file, we provide all code used analyze the summary data. Raw data files are not used in this analysis.
+
+```{r resources, include=FALSE}
+library(knitr)
+
+# set global chunk options
+opts_chunk$set(warning=FALSE,
+               message=FALSE)
+```
