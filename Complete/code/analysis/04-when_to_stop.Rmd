@@ -3,81 +3,134 @@
 ```{r stop load and select data}
 # load data
 stop <- read_csv("../../data/processed/stop.csv")
+stop_breaks <- read_csv("../../data/processed/stop_breaks.csv")
 ```
 
-In this section, we analyze when players decided to stop. For this analysis, players need to have at least 10 rounds in total (all sessions combined) to be included in the analysis. The table below shows the number of players and rounds left in this analysis.
+## Main analysis
+
+In this section, we analyze when players decided to stop. For this analysis, players need to have 5 wins and 5 losses (all sessions combined) to be included in the analysis. The table below shows the number of players and rounds left in this analysis.
 
 ```{r stop - data preparation, results='asis'}
-# players need to have at least 10 rounds
-# in order to be included in the analysis
-players_exclude <- stop %>% 
-  filter(
-    round_pos == "overall",
-    total_count < 10
+# players need to have at least 5 wins and 5 losses
+players_incldue <- stop %>%
+  filter(total_count >= 5) %>%
+  pivot_wider(
+    id_cols = c(group, id_player), names_from = outcome,
+    values_from = stop_prob
   ) %>%
-  .$id_player %>% unique
+  drop_na() %>%
+  .$id_player
 
-stop <- stop %>% filter(!id_player %in% players_exclude)
-
+stop <- stop %>% filter(id_player %in% players_incldue)
+stop_breaks <- stop_breaks %>% filter(id_player %in% players_incldue)
+  
 # calculate the remaining number of players and rounds
 count <- stop %>%
-  filter(round_pos == "overall") %>%
+  group_by(group, id_player) %>%
+  summarize(nrounds = sum(total_count)) %>%
   group_by(group) %>%
   summarize(
     player = n(),
-    round = mean(total_count),
-    sd = sd(total_count),
-    min = min(total_count),
-    max = max(total_count)
+    round = mean(nrounds),
+    sd = sd(nrounds),
+    min = min(nrounds),
+    max = max(nrounds)
   )
 
-kable(count, caption = "Number of players and rounds left")
+kable(count, caption = "Number of players and rounds left") %>%
+  kable_styling()
 ```
 
-## Plot
+### Plot
 
-For the remaining players, we calculate the overall probability of winning (using all game rounds), and the probability of winning on the last round of each session, when players decided to stop. These winning probabilities are plotted below for the two groups separately.  
+For the remaining players, we first plot the probabilities of ending a session after a win versus after a loss.
 
-(ref:end-session-plot-cap) Probability of winning in all game rounds and at the end of a session. Error bars stand for 95\% within-subject confidence intervals.
+(ref:stop-prob-plot-cap) Probability of ending a session after a win and a loss. Error bars stand for 95\% within-subject confidence intervals.
 
-```{r stop plot, fig.cap="(ref:end-session-plot-cap)", fig.width=3.5, fig.height=3.5}
-# for the high-risk and the low-risk group separately,
-# calculate the mean winning probabilities for rounds at the end of session
-# and for all round combined
+```{r stop plot, fig.cap="(ref:stop-prob-plot-cap)", fig.width=3.5, fig.height=3.5}
 stop_summary <- stop %>%
   group_by(group) %>%
-  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "win_prob", idvar = "id_player",
-                        withinvars = "round_pos")) %>%
-  mutate(round_pos = factor(round_pos, levels = c("overall", "end")))
+  group_modify(~Rmisc::summarySEwithin(.x, 
+                                       measurevar = "stop_prob", 
+                                       idvar = "id_player",
+                                       withinvars = "outcome")) %>%
+  mutate(
+    outcome = factor(outcome, levels = c("loss", "win")),
+    group = factor(group, levels = c("High-Risk", "Low-Risk"),
+                   labels = c("High-Involvement", "Low-Involvement"))
+  )
 
-# plot winning probabilities
-stop_plot <- ggplot(stop_summary, aes(round_pos, win_prob, color = group)) +
-  geom_point(position = position_dodge(width = 0.5)) +
-  geom_line(aes(group = group), linetype = "dashed", position = position_dodge(width = 0.5)) +
-  geom_errorbar(aes(ymin = win_prob-ci, ymax = win_prob+ci), width = 0.2,
-                position = position_dodge(width = 0.5)) +
+# plot the probabilities of stopping a session after a win vs. a loss
+stop_plot <- ggplot(stop_summary, 
+                    aes(outcome, stop_prob, color = group, shape = group)) +
+  geom_point(position = position_dodge(width = dodge_width), size = shape_size) +
+  geom_line(aes(group = group, linetype = group), 
+            position = position_dodge(width = dodge_width)) +
+  geom_errorbar(aes(ymin = stop_prob-ci, ymax = stop_prob+ci), width = 0.2,
+                position = position_dodge(width = dodge_width)) +
   # use colorblind-friendly color
   scale_color_manual(values=color_values) + 
-  scale_x_discrete(labels=c("end" = "End of session", "overall" = "All rounds")) +
-  labs(x = "Position of a round", 
-       y = "Probability of winning (%)",
-       color = "Group") +
-  theme(legend.position = "top", legend.direction = "horizontal")
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Probability of ending a session (%)",
+       color = "Group", shape = "Group", linetype = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal") 
 
 stop_plot
 
 ggsave("figure/stop.pdf", stop_plot, width = 3.5, height = 3.5)
 ```
 
-## ANOVA
+The high-involvement players overall had a lower probability of ending a session, as they tended to have longer sessions on average. To control for this overall between-group difference in the stopping probability, we divided the probability of stopping after a win or after a loss by the overall probability of stopping for each player.
 
-The winning probabilities are analyzed with a mixed ANOVA, with the position of a round (all rounds vs. end of session, within subjects) and the risk level (high vs. low, between subjects) as independent variables.
+(ref:stop-prob-controlled-plot-cap) Probability of ending a session after a win and a loss, controlling for the overall probability of stopping. Error bars stand for 95\% within-subject confidence intervals.
+
+```{r stop controlled plot, fig.cap="(ref:stop-prob-controlled-plot-cap)", fig.width=4, fig.height=4}
+stop <- stop %>%
+  mutate(stop_prob_relative = stop_prob/stop_overall)
+
+stop_summary <- stop %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "stop_prob_relative", 
+                                       idvar = "id_player", withinvars = "outcome")) %>%
+  mutate(outcome = factor(outcome, levels = c("loss", "win")),
+         group = factor(group, levels = c("High-Risk", "Low-Risk"),
+                        labels = c("High-Involvement", "Low-Involvement")))
+
+# plot winning probabilities
+stop_plot <- ggplot(stop_summary, 
+                    aes(outcome, stop_prob_relative, color = group, shape = group)) +
+  geom_point(position = position_dodge(width = dodge_width), size = shape_size) +
+  geom_line(aes(group = group, linetype = group), 
+            position = position_dodge(width = dodge_width)) +
+  geom_errorbar(aes(ymin = stop_prob_relative-ci, ymax = stop_prob_relative+ci), 
+                width = 0.2,
+                position = position_dodge(width = dodge_width)) +
+  # use colorblind-friendly color
+  scale_color_manual(values=color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Relative likelihood of ending a session",
+       color = "Group", shape = "Group", linetype = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal") 
+
+stop_plot
+
+# this will be the main figure included in the paper
+stop_plot_main <- stop_plot
+
+ggsave("figure/stop_relative.pdf", stop_plot, width = 4, height = 4)
+```
+
+### ANOVA
+
+The stopping probabilities are analyzed with a mixed ANOVA, with the previous outcome (loss vs. win, within subjects) and the involvement level (high vs. low, between subjects) as independent variables. we conduct the analysis for both the raw probabilities of stopping, and the relative likelihood of stopping after taking the overall probability of stopping into account.
 
 ```{r stop anova analysis, cache = TRUE, results = "asis"}
 # run an ANOVA
 stop_anova <- aov_ez(id = "id_player"
-                     , dv = "win_prob"
-                     , within = "round_pos"
+                     , dv = "stop_prob"
+                     , within = "outcome"
                      , between = "group"
                      , data = stop)
 
@@ -86,7 +139,232 @@ stop_anova <- nice(stop_anova)
 # do a bit formatting
 stop_anova <- stop_anova %>%
   mutate(
-    Effect = c("Risk Level", "Round Position", "Interaction"),
+    Effect = c("Involvement Level", "Outcome", "Interaction"),
+    # remove asterisks from the F values
+    `F` = str_remove_all(`F`, "[*]"),
+    # remove white spaces
+    `F` = str_trim(`F`)
+  ) %>%
+  rename(p = "p.value")
+
+kable(stop_anova, 
+      caption = "When do players decide to stop?",
+      booktabs = T, align = "l")
+```
+
+
+```{r relative stop anova analysis, cache = TRUE, results = "asis"}
+# run an ANOVA
+stop_anova <- aov_ez(id = "id_player"
+                     , dv = "stop_prob_relative"
+                     , within = "outcome"
+                     , between = "group"
+                     , data = stop)
+
+stop_anova <- nice(stop_anova)
+
+# do a bit formatting
+stop_anova <- stop_anova %>%
+  mutate(
+    Effect = c("Involvement Level", "Outcome", "Interaction"),
+    # remove asterisks from the F values
+    `F` = str_remove_all(`F`, "[*]"),
+    # remove whitespace
+    `F` = str_trim(`F`)
+  ) %>%
+  rename(p = "p.value")
+
+kable(stop_anova, 
+      caption = "When do players decide to stop? (Controlling for the overall probability of stopping)",
+      booktabs = T, align = "l")
+```
+
+
+### Pairwise comparisons
+
+Next we conduct a series of pairwise comparisons. First, we examine the effects within groups, by comparing the probability of stopping after a loss vs. that after a win, for each group separately. Next we examine the effects between groups, by calculating a difference score for each player (stopping after a loss - stopping after a win) and compare the difference scores between two groups. P values are corrected for multiple comparisons using the Holm-Bonferroni method.
+
+```{r stop pairwise t tests, results='asis'}
+# for pairwise comparisons, we need the data in the wide format
+stop_wide <- stop %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = outcome,
+              values_from = stop_prob) %>%
+  # calculate a difference score
+  mutate(diff = loss - win)
+
+# within-group comparisons
+# first, compare the effect within each group
+comp_within <- stop_wide %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons
+comp_between1 <- TES(filter(stop_wide, group == "High-Risk")$loss,
+                    filter(stop_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- TES(filter(stop_wide, group == "High-Risk")$win,
+                    filter(stop_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- TES(filter(stop_wide, group == "High-Risk")$diff,
+                    filter(stop_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
+
+# combine and correct p values for multiple comparisons
+comp <- bind_rows(comp_within, comp_between) %>%
+  mutate(
+    Comparison = c("High-Loss vs. High-Win", 
+                   "Low-Loss vs. Low-Win", 
+                   "High-Loss vs. Low-Loss",
+                   "High-Win vs. Low-Win",
+                   "(High-Loss - High-Win) vs. (Low-Loss - Low-Win)"),
+    pt = p.adjust(pt, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    across(mean_x:upperCI, ~round(.x, digits = 2)),
+    across(c(d, g), ~round(.x, digits = 3)),
+    t = round(t, digits = 1),
+    df = round(df, digits = 1),
+    p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
+    logBF = round(logBF, digits = 2)
+  ) %>%
+  select(Comparison, mean_x:t, p, logBF, g) 
+
+# show the table
+kable(comp, caption = "Pairwise comparisons on when to stop",
+      booktabs = T, align = "l") %>%
+  scroll_box(width = "100%", height = "100%")
+
+```
+
+Repeat the pairwise comparisons, but this time accounting for the overall probability of stopping.
+
+```{r relative stop pairwise t tests, results='asis'}
+# for pairwise comparisons, we need the data in the wide format
+stop_wide <- stop %>%
+  pivot_wider(id_cols = c(group, id_player),
+              names_from = outcome,
+              values_from = stop_prob_relative) %>%
+  # calculate a difference score
+  mutate(diff = loss - win)
+
+# within-group comparisons
+# first, compare the effect within each group
+comp_within <- stop_wide %>%
+  group_by(group) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
+  mutate(d = dz, g = gav) %>%
+  ungroup() %>% select(-group, -dz, -gav, -dav)
+
+# between group comparisons
+comp_between1 <- TES(filter(stop_wide, group == "High-Risk")$loss,
+                    filter(stop_wide, group == "Low-Risk")$loss, paired = FALSE)
+
+comp_between2 <- TES(filter(stop_wide, group == "High-Risk")$win,
+                    filter(stop_wide, group == "Low-Risk")$win, paired = FALSE)
+
+comp_between3 <- TES(filter(stop_wide, group == "High-Risk")$diff,
+                    filter(stop_wide, group == "Low-Risk")$diff, paired = FALSE)
+
+comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
+
+# combine and correct p values for multiple comparisons
+comp <- bind_rows(comp_within, comp_between) %>%
+  mutate(
+    Comparison = c("High-Loss vs. High-Win", 
+                   "Low-Loss vs. Low-Win", 
+                   "High-Loss vs. Low-Loss",
+                   "High-Win vs. Low-Win",
+                   "(High-Loss - High-Win) vs. (Low-Loss - Low-Win)"),
+    pt = p.adjust(pt, method = "holm")
+  ) 
+
+# do some formatting
+comp <- comp %>%
+  mutate(
+    across(mean_x:upperCI, ~round(.x, digits = 2)),
+    across(c(d, g), ~round(.x, digits = 3)),
+    t = round(t, digits = 1),
+    df = round(df, digits = 1),
+    p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
+    logBF = round(logBF, digits = 2)
+  ) %>%
+  select(Comparison, mean_x:t, p, logBF, g) 
+
+# show the table
+kable(comp, caption = "Pairwise comparisons on when to stop",
+      booktabs = T, align = "l") %>%
+  scroll_box(width = "100%", height = "100%")
+
+
+```
+
+## With breaks
+
+Here we repeat the analysis above (controlling for the overall probability of stopping), while also taking breaks in play into account.
+
+### Plot
+
+(ref:stop-prob-controlled-breaks-plot-cap) Probability of ending a session after a win and a loss, controlling for the overall probability of stopping. Error bars stand for 95\% within-subject confidence intervals.
+
+```{r stop controlled plot with breaks, fig.cap="(ref:stop-prob-controlled-breaks-plot-cap)", fig.width=4, fig.height=4}
+stop_breaks <- stop_breaks %>%
+  mutate(stop_prob_relative = stop_prob/stop_overall)
+
+stop_summary <- stop_breaks %>%
+  group_by(group) %>%
+  group_modify(~Rmisc::summarySEwithin(.x, measurevar = "stop_prob_relative", 
+                                       idvar = "id_player", withinvars = "outcome")) %>%
+  mutate(
+    outcome = factor(outcome, levels = c("loss", "win")),
+    group = factor(group, levels = c("High-Risk", "Low-Risk"),
+                   labels = c("High-Involvement", "Low-Involvement"))
+  )
+
+# plot winning probabilities
+stop_plot <- ggplot(stop_summary, 
+                    aes(outcome, stop_prob_relative, color = group, shape = group)) +
+  geom_point(position = position_dodge(width = dodge_width), size = shape_size) +
+  geom_line(aes(group = group, linetype = group), 
+            position = position_dodge(width = dodge_width)) +
+  geom_errorbar(aes(ymin = stop_prob_relative-ci, ymax = stop_prob_relative+ci), 
+                width = 0.2,
+                position = position_dodge(width = dodge_width)) +
+  # use colorblind-friendly color
+  scale_color_manual(values=color_values) + 
+  scale_x_discrete(labels=c("loss" = "Loss", "win" = "Win")) +
+  labs(x = "Previous outcome", 
+       y = "Relative likelihood of stopping",
+       color = "Group", shape = "Group", linetype = "Group") +
+  theme(legend.position = "top", legend.direction = "horizontal") 
+
+stop_plot
+
+ggsave("figure/stop_breaks.pdf", stop_plot, width = 4, height = 4)
+```
+
+### ANOVA
+
+```{r relative stop anova analysis with breaks, cache = TRUE, results = "asis"}
+# run an ANOVA
+stop_anova <- aov_ez(id = "id_player"
+                     , dv = "stop_prob_relative"
+                     , within = "outcome"
+                     , between = "group"
+                     , data = stop_breaks)
+
+stop_anova <- nice(stop_anova)
+
+# do a bit formatting
+stop_anova <- stop_anova %>%
+  mutate(
+    Effect = c("Involvement Level", "Outcome", "Interaction"),
     # remove asterisks from the F values
     `F` = str_remove_all(`F`, "[*]"),
     # remove whitespace
@@ -97,93 +375,65 @@ stop_anova <- stop_anova %>%
 kable(stop_anova, 
       caption = "When do players decide to stop?",
       booktabs = T, align = "l")
-
-# # show the table in latex code
-# kable(stop_anova, "latex",
-#       caption = "Anova on the decision to stop playing",
-#       booktabs = T, align = "l") %>%
-#   kable_styling(latex_options = "scale_down")
 ```
 
-## Pairwise comparisons
+### Pairwise comparisons
 
-Next we conduct a series of pairwise comparisons. First, we examine the effects within groups, by comparing the overall winning probability against the winning probability at session end for each group, separately. Next we examine the effects between groups, by comparing the overall winning probabilities between the two groups, and the winning probabilities at session end between the two groups. We further calculate a difference score for each player (overall winning probability - winning probability at session end) and compare the difference scores between two groups. P values are corrected for multiple comparisons using the Holm-Bonferroni method.
-
-```{r stop pairwise t tests, results='asis'}
-# calculate mean winning probabilities for rounds at session end
-# and all rounds combined
-win_prob <- stop %>%
-  group_by(round_pos) %>%
-  summarize(mean = mean(win_prob), sd = sd(win_prob))
-
-# calculate mean winning probabilities for rounds at session end
-# and all rounds combined, for two groups separately
-win_prob_per_group <- stop %>%
-  group_by(group, round_pos) %>%
-  summarize(mean = mean(win_prob), sd = sd(win_prob))
-
+```{r relative stop with breaks pairwise t tests, results='asis'}
 # for pairwise comparisons, we need the data in the wide format
-stop_wide <- stop %>%
+stop_wide <- stop_breaks %>%
   pivot_wider(id_cols = c(group, id_player),
-              names_from = round_pos,
-              values_from = win_prob) %>%
+              names_from = outcome,
+              values_from = stop_prob_relative) %>%
   # calculate a difference score
-  mutate(diff = end - overall)
-
+  mutate(diff = loss - win)
 
 # within-group comparisons
 # first, compare the effect within each group
 comp_within <- stop_wide %>%
   group_by(group) %>%
-  group_modify(~TES(.x$end, .x$overall, paired = TRUE)) %>%
+  group_modify(~TES(.x$loss, .x$win, paired = TRUE)) %>%
   mutate(d = dz, g = gav) %>%
   ungroup() %>% select(-group, -dz, -gav, -dav)
 
 # between group comparisons
-# next, compare the probabilities and the difference scores between groups
-comp_between1 <- TES(filter(stop_wide, group == "High-Risk")$end,
-                     filter(stop_wide, group == "Low-Risk")$end, paired = FALSE)
+comp_between1 <- TES(filter(stop_wide, group == "High-Risk")$loss,
+                    filter(stop_wide, group == "Low-Risk")$loss, paired = FALSE)
 
-comp_between2 <- TES(filter(stop_wide, group == "High-Risk")$overall,
-                     filter(stop_wide, group == "Low-Risk")$overall, paired = FALSE)
+comp_between2 <- TES(filter(stop_wide, group == "High-Risk")$win,
+                    filter(stop_wide, group == "Low-Risk")$win, paired = FALSE)
 
 comp_between3 <- TES(filter(stop_wide, group == "High-Risk")$diff,
-                     filter(stop_wide, group == "Low-Risk")$diff, paired = FALSE)
+                    filter(stop_wide, group == "Low-Risk")$diff, paired = FALSE)
 
 comp_between <- bind_rows(comp_between1, comp_between2, comp_between3)
 
 # combine and correct p values for multiple comparisons
 comp <- bind_rows(comp_within, comp_between) %>%
   mutate(
-    Comparison = c("Session End vs. Overall (High-Risk)", 
-                   "Session End vs. Overall (Low-Risk)", 
-                   "High- vs. Low-Risk (Session End)",
-                   "High- vs. Low-Risk (Overall)",
-                   "High- vs. Low-Risk (Difference)"),
+    Comparison = c("High-Loss vs. High-Win", 
+                   "Low-Loss vs. Low-Win", 
+                   "High-Loss vs. Low-Loss",
+                   "High-Win vs. Low-Win",
+                   "(High-Loss - High-Win) vs. (Low-Loss - Low-Win)"),
     pt = p.adjust(pt, method = "holm")
   ) 
 
 # do some formatting
 comp <- comp %>%
   mutate(
-    across(diff:upperCI, ~round(.x, digits = 1)),
+    across(mean_x:upperCI, ~round(.x, digits = 2)),
     across(c(d, g), ~round(.x, digits = 3)),
     t = round(t, digits = 1),
     df = round(df, digits = 1),
     p = ifelse(pt < .001, "<.001", sprintf("%.3f", round(pt, digits = 3))),
     logBF = round(logBF, digits = 2)
   ) %>%
-  select(Comparison, diff:t, p, logBF, g) 
+  select(Comparison, mean_x:t, p, logBF, g) 
 
 # show the table
-kable(comp, caption = "Pairwise comparisons for effects on when to stop",
+kable(comp, caption = "Pairwise comparisons on when to stop",
       booktabs = T, align = "l") %>%
   scroll_box(width = "100%", height = "100%")
 
-# # show the table in latex code
-# kable(comp, "latex",
-#       caption = "Pairwise comparisons for effects on when to stop",
-#       booktabs = T, align = "l") %>%
-#   kable_styling(latex_options = "scale_down")
 ```
-

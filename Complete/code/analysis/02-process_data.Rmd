@@ -1,7 +1,6 @@
 # Process data
 
-The raw data on the individual game level cannot be shared as they are proprietary. We nevertheless provide the code that we used to process the raw data to get processed player-level data. The processed (summary) data are shared (in the `data/processed` folder) and can be used to reproduce the results that we report in the paper.
-
+The raw data on the round level cannot be shared as they are proprietary. We nevertheless provide the code that we used to process the raw data to get the player-level summary data. The summary data are in the `data/processed` folder and can be used to reproduce the results in the paper.
 
 ```{r load-raw-data}
 #### load data from high-risk players ####
@@ -20,7 +19,7 @@ d_high_risk <- files %>%
                                   "rt9", "rt10", "rt11", "rt12", "bonus"),
                     col_types =  cols(.default = col_character())))
 
-# load some demographic data 
+# load demographic data (age and gender)
 d_high_risk_demo <- read_delim("../../data/raw/meta_data_addict_players.csv", delim = ";",
                                col_types = cols(.default = col_character()))
 
@@ -30,7 +29,7 @@ d_high_risk <- d_high_risk %>%
 
 #### load data from low-risk players ####
 
-# get all folders where data from high-risk players are saved
+# get all folders where data from low-risk players are saved
 folders <- list.dirs("../../data/raw/data_non_addict_players", full.names = TRUE, recursive = FALSE)
 
 # get all file names
@@ -45,7 +44,7 @@ d_low_risk <- files %>%
                     col_types =  cols(.default = col_character())))
 
 
-# load some demographic data 
+# load demographic data (age and gender)
 d_low_risk_demo <- read_delim("../../data/raw/meta_data_non_addict_players.csv", delim = ";",
                               col_types = cols(.default = col_character()))
 
@@ -63,8 +62,8 @@ low_risk_players <- unique(d_low_risk$id_player)
 # all(low_risk_players %in% high_risk_players == FALSE)
 
 # both commands above return TRUE, showing that 
-# the two groups all have different anonymous player IDs
-# suggesting that indeed that they consist of different players
+# the two groups have different anonymous player IDs.
+# Thus, the two groups indeed consist of different players.
 
 #### combine data ####
 
@@ -95,24 +94,25 @@ remove(d_low_risk)
 
 # change player id, session id and round id into integers
 d <- d %>%
-  # each player gets an unique number, starting from 1
+  # each player gets a unique number, starting from 1
   mutate(id_player = match(id_player, unique(id_player))) %>%
-  # within each player, each session gets an unique number, starting from 1 
+  # within each player, each session gets a unique number, starting from 1 
   group_by(id_player) %>%
   mutate(id_session = match(id_session, unique(id_session))) %>%
-  # each round within each session gets an unique number, starting from 1
+  # each round within each session gets a unique number, starting from 1
   group_by(id_player, id_session) %>%
   mutate(id_round = row_number()) %>%
   ungroup()
 
-# change numeric variables (stake, win, rts etc.) into numeric
+# change some variables (stake, win, RTs etc.) into numeric
 d <- d %>%
   mutate(
     across(stake:rt12, as.numeric),
-    across(c(level, age, income), as.numeric)
+    across(c(level, age), as.numeric)
   )
 
-# create new variables for the stake, win, and whether there is bonus or not on the previous round
+# create new variables for the stake,  win amount on the previous round, 
+# and whether there is a bonus game or not on the previous round.
 d <- d %>%
   group_by(id_player, id_session) %>%
   mutate(
@@ -140,8 +140,8 @@ The `descriptive_data.csv` file contains the following variables.
 * risk_3: whether the player receives a risk level of 3 in the data, 1 = yes, 0 = no.
 * risk_4: whether the player receives a risk level of 4 in the data, 1 = yes, 0 = no.
 * risk_5: whether the player receives a risk level of 5 in the data, 1 = yes, 0 = no.
-* n_session: the total number of sessions played.
-* n_round_total: the total number of rounds played.
+* n_session: the total number of sessions played by each player.
+* n_round_total: the total number of rounds played by each player.
 * n_round_mean: the mean number of rounds played per session.
 * n_round_median: the median number of rounds played per session.
 * bet_max: the maximum bet size across all rounds, in euro.
@@ -228,8 +228,7 @@ wins <- d %>%
   # select winning rounds
   filter(win > 0) %>%
   # for each player, calculate the max, min, mean and median win amount
-  # the real win amount is the win amount displayed by the game, minus
-  # the stake
+  # the real win amount is the win amount displayed by the game, minus the stake
   mutate(win = win - stake) %>%
   group_by(id_player) %>%
   summarize(
@@ -279,38 +278,6 @@ write_csv(d_descriptive, "../../data/processed/descriptive_data.csv")
 remove(age_gender, risk_levels, rounds, bets, win_prob, wins, losses, total_spent, d_descriptive)
 ```
 
-### sessions_count.csv
-
-To further characterize the play behavior, we count the number of rounds played in each session. For the high-risk and low-risk groups separately, we count the number of sessions that contained certain number of rounds (combined across all players in the same group). The data are saved in the `sessions_count.csv` file, which contains the following variables.
-
-* group: the group to which players belong, High-Risk or Low-Risk.
-* n_round_bin: the number of rounds per session is divided into bins. (a, b] means a certain session has > a and <= b rounds. Note that bin widths become larger for larger values.
-* n_round_label: a numeric label for each bin, from 1 till 34 (included for later plotting).
-* n_session: the number of sessions that contain certain numbers of rounds, combined across all players in the same group. E.g, for the High-Risk group, 13314 sessions fall into the (0,10] bin, meaning that for all players in the High-Risk group, 13314 sessions contain > 0 and <= 10 rounds.
-
-
-```{r sessions_count}
-# we count the number of sessions that contain certain number of rounds
-# across all players, for the high-risk and low-risk groups separately
-sessions_count <- d %>%
-  # count the number of rounds in each session
-  count(group, id_player, id_session) %>%
-  # divide the number of rounds into into bins
-  mutate(
-    n_round_bin = cut(n, breaks = c((0:20)*10, (3:10)*100, (2:7)*1000)),
-    n_round_label = cut(n, breaks = c((0:20)*10, (3:10)*100, (2:7)*1000), labels = 1:34)
-  ) %>%
-  # calculate the number of sessions with certain numbers of rounds
-  count(group, n_round_bin, n_round_label, name = "n_session") %>%
-  mutate(n_round_label = as.numeric(n_round_label)) 
-
-# save the data frame as a csv file
-write_csv(sessions_count, "../../data/processed/sessions_count.csv")
-
-# remove data frame(s)
-remove(sessions_count)
-```
-
 ### bet_counts.csv
 
 On each round, players can choose one of ten different bet sizes (from 0.25 euro to 20 euro). To characterize the betting patterns, for each player we count the number of rounds where they chose a certain bet size. The data are saved in the `bet_counts.csv` file, which contains the following variables.
@@ -350,76 +317,189 @@ remove(bets_count)
 ```
 
 
-## Stop
-
-After each round, players can choose either to continue playing, or stop. Here we prepare data on whether the decision to stop is influenced by the prior outcome (win vs. loss) or not.
+## When to stop
 
 ### stop.csv
 
-For this analysis, we calculate the probability of winning on the last round of each session, as well as the overall probability of winning with all rounds combined, for each player. The idea is that if players made the decision to stop regardless of the outcome of a game, the overall probability of winning would be the same for the last round of each session and all rounds combined. However, if players were more likely to stop after a win, the last round would contain more wins than all rounds combined; conversely, if players were more likely to stop after a loss, the last round would contain more losses (i.e., a lower winning probability) than all rounds combined. The processed data are saved in the `stop.csv` file, with the following variables.
+After each round, players can choose either to continue playing, or stop. Here we prepare data on the probability of ending a session after a win or a loss. The data are saved in the `stop.csv` file, which contains the following variables.
 
 * group: the group to which a player belongs, High-Risk or Low-Risk.
 * id_player: the anonymous id of a player.
-* round_pos: whether a certain round is at the end of a session ('end') or all rounds combined ('overall').
-* total_count: the total number of rounds in each condition, either at the end of a session or all rounds combined.
-* win_count: the total number of rounds on which players won in each condition.
-* win_prob: the probability of winning in each condition, calculated based on the previous two counts, from 0 (%) to 100 (%).
+* outcome: the outcome of a round, win or loss.
+* total_count: the total number of rounds with a particular outcome (win or loss).
+* stop_count: the total number of rounds after which a player decided to end a session.
+* stop_prob: the probability (%) of ending a session after a particular outcome. This variable is computed by dividing stop_count by total_count and then multiplied by 100.
+* stop_overall: the overall probability (%) of ending a session regardless of the outcome of a round. This variable is computed by dividing the number of rounds at the end of a session by the total number of rounds (all sessions combined), and then multiplied by 100.
 
-```{r stop}
-# calculate the overall number of rounds and the probability of winning for each player
-win_overall <- d %>%
-  mutate(outcome = ifelse(win > 0, "win", "loss")) %>%
-  group_by(group, id_player) %>%
-  summarize(
-    total_count = n(),
-    win_count = sum(outcome == "win"),
-    win_prob = win_count/total_count * 100
+
+```{r when to stop}
+# for each player, compute their overall probability of stopping
+stop_prob <- d %>%
+  group_by(group, id_player, id_session) %>%
+  mutate(
+    # if a certain round has the largest round id in a session
+    # it means that round is the last one, and player ended the session afterwards
+    round_pos = ifelse(id_round == max(id_round), "end", "in")
   ) %>%
-  ungroup() %>%
-  mutate(round_pos = "overall") %>%
-  select(group, id_player, round_pos, total_count, win_count, win_prob)
+  group_by(group, id_player) %>%
+  summarise(
+    total_count = n(),
+    stop_count = sum(round_pos == "end"),
+    stop_overall = stop_count/total_count * 100
+  )
 
-# calculate the number of rounds that occur at the end of a session
-# and the probability of winning in this subset of rounds
-win_end_session <- d %>%
-  mutate(outcome = ifelse(win > 0, "win", "loss")) %>%
+# for each player, compute the probability of stopping after a win and a loss
+stop_prob_outcome <- d %>%
   group_by(group, id_player, id_session) %>%
   mutate(
     # if a certain round has the largest id in a session
     # it means that round is the last one, and player ended the session afterwards
-    round_pos = ifelse(id_round == max(id_round), "end", "in")
+    round_pos = ifelse(id_round == max(id_round), "end", "in"),
+    # determine whether each round is a win or a loss
+    outcome = ifelse(win > 0, "win", "loss")
   ) %>%
-  filter(round_pos == "end") %>%
-  # for each player, calculate the number of rounds and wins at the end of each session
-  group_by(group, id_player, round_pos) %>%
-  summarize(
-    total_count = n(),
-    win_count = sum(outcome == "win"),
-    win_prob = win_count/total_count * 100
-  ) %>%
-  select(group, id_player, round_pos, total_count, win_count, win_prob)
+  group_by(group, id_player, outcome) %>%
+  summarise(
+    total_count = n(), # the total number of winning or losing rounds
+    stop_count = sum(round_pos == "end"), # the number of winning or losing rounds at session end
+    stop_prob = stop_count/total_count * 100 # the probability of stopping after winning or losing
+  )
 
-# combine the two data frames
-stop <- win_overall %>%
-  bind_rows(win_end_session) %>%
-  arrange(group, id_player)
+# combine the overall probability of stopping and 
+# the probability of stopping after winning or losing
+stop <- stop_prob %>%
+  select(group, id_player, stop_overall) %>%
+  full_join(stop_prob_outcome, by = c("group", "id_player")) %>%
+  select(group, id_player, outcome, total_count, stop_count,
+         stop_prob, stop_overall)
 
 # save the data frame as a csv file
 write_csv(stop, "../../data/processed/stop.csv")
 
 # remove data frame(s)
-remove(stop, win_overall, win_end_session)
+remove(stop, stop_prob, stop_prob_outcome)
+```
+
+
+### stop_breaks.csv
+
+Players might take a break without logging off. To take such breaks in play into account, we assume that whenever players took more than 10 minutes to make a move, it means that they had taken a break. A new session starts after such a break. The data are saved in the `stop_breaks.csv` file, which contains the following variables.
+
+* group: the group to which a player belongs, High-Risk or Low-Risk.
+* id_player: the anonymous id of a player.
+* outcome: the outcome of a round, win or loss.
+* total_count: the total number of rounds with a particular outcome (win or loss).
+* stop_count: the total number of rounds after which a player decided to end a session.
+* stop_prob: the probability (%) of ending a session after a particular outcome. This value is computed by dividing stop_count by total_count and then multiplied by 100.
+* stop_overall: the overall probability (%) of ending a session regardless of the outcome of a round. This variable is computed by dividing the number of rounds at the end of a session by the total number of rounds (all sessions combined), and then multiplied by 100.
+
+
+```{r when to stop with breaks in play}
+# when any one of the 13 responses took longer than 10 minutes 
+# (i.e., 10 * 60 * 1000 milliseconds), a break occurs
+break_duration <- 10*60*1000
+
+d <- d %>%
+  rowwise() %>%
+  mutate(
+    breaks = ifelse(
+      any(rt_start > break_duration,
+          rt1 > break_duration,
+          rt2 > break_duration,
+          rt3 > break_duration,
+          rt4 > break_duration,
+          rt5 > break_duration,
+          rt6 > break_duration,
+          rt7 > break_duration,
+          rt8 > break_duration,
+          rt9 > break_duration,
+          rt10 > break_duration,
+          rt11 > break_duration,
+          rt12 > break_duration), 
+      1,
+      0
+    )
+  )
+
+# define new sessions by taking breaks into account
+d <- d %>%
+  ungroup() %>%
+  mutate(
+    break_count = cumsum(breaks),
+    new_id_session = paste(id_session, break_count, sep = "_")
+  ) %>%
+  # within each player, each session gets a unique number, starting from 1 
+  group_by(id_player) %>%
+  mutate(new_id_session = match(new_id_session, unique(new_id_session)))
+
+# check the number of sessions when breaks are accounted for
+sessions_count <- d %>%
+  group_by(id_player) %>%
+  summarize(
+    n_old_session = n_distinct(id_session),
+    n_new_session = n_distinct(new_id_session)
+  ) %>%
+  mutate(diff = n_new_session - n_old_session)
+
+# now compute the probabilities of stopping 
+
+# for each player, compute their overall probability of stopping
+stop_prob <- d %>%
+  group_by(group, id_player, new_id_session) %>%
+  mutate(
+    # if a certain round has the largest id in a session
+    # it means that round is the last one, and player ended the session afterwards
+    round_pos = ifelse(id_round == max(id_round), "end", "in")
+  ) %>%
+  group_by(group, id_player) %>%
+  summarise(
+    total_count = n(),
+    stop_count = sum(round_pos == "end"),
+    stop_overall = stop_count/total_count * 100
+  )
+
+# for each player, compute the probability of stopping after a win or a loss
+stop_prob_outcome <- d %>%
+  group_by(group, id_player, new_id_session) %>%
+  mutate(
+    # if a certain round has the largest id in a session
+    # it means that round is the last one, and player ended the session afterwards
+    round_pos = ifelse(id_round == max(id_round), "end", "in"),
+    # determine if each round is a win or a loss
+    outcome = ifelse(win > 0, "win", "loss")
+  ) %>%
+  group_by(group, id_player, outcome) %>%
+  summarise(
+    total_count = n(),
+    stop_count = sum(round_pos == "end"),
+    stop_prob = stop_count/total_count * 100
+  )
+
+# add the overall probability of stopping as a column
+stop_breaks <- stop_prob %>%
+  select(group, id_player, stop_overall) %>%
+  full_join(stop_prob_outcome, by = c("group", "id_player")) %>%
+  select(group, id_player, outcome, total_count, stop_count,
+         stop_prob, stop_overall)
+
+# save the data frame as a csv file
+write_csv(stop_breaks, "../../data/processed/stop_breaks.csv")
+
+# remove data frame(s)
+remove(stop_breaks, stop_prob, stop_prob_outcome)
+
 ```
 
 
 ## Stake change
 
-Players can change their stakes between rounds. We explore whether the probability of changing stakes is influenced by prior outcome, and how players changed stakes when they did change stakes (again, as a function of prior outcome).
+Players can change their stakes between rounds. We explore whether the probability of changing stakes is influenced by prior outcome, and the change in stake amount as a function of prior outcome.
 
 ### stake_change.csv
 
 Players can choose among 10 different levels of stake sizes (from 0.25 euro to 20 euro). Since we are interested in whether wins and losses may change the betting behavior, we exclude the first round of each session (i.e., these rounds have no prior outcomes). For the remaining data, we calculate the number of rounds that follow a win or a loss, and the probability of changing stakes.
-We also calculate the average change in stakes (in euro; a positive change score indicates increasing stake, while a negative change score indicates decreasing stake). Since players can only select one from ten levels of stakes, as a second measure of stake change, we transform the stake amounts into stake levels, with 1 being the lowest level of stake (0.25 euro) and 10 being the highest level of stake (20 euro). A change score is then calculated based on the levels (rather than the original amounts) of stakes. We calculate the average change in stake sizes and stake levels both for all rounds, and only on rounds where players did change stakes.
+
+We also calculate the average change in stakes (in euro; a positive change score indicates increasing stake, while a negative change score indicates decreasing stake). Since players can only select one from ten levels of stakes, as a second measure of stake change, we transform the stake amounts into stake levels, with 1 being the lowest level of stake (0.25 euro) and 10 being the highest level of stake (20 euro). A change score is then calculated based on the levels (rather than the stake amounts) of stakes. We calculate the average change in stake sizes and stake levels both for all rounds, and only on rounds where players did change stakes.
 
 The following variables are calculated and saved in the `stake_change.csv` file.
 
@@ -431,8 +511,8 @@ The following variables are calculated and saved in the `stake_change.csv` file.
 * stake_change_prop: the proportion of rounds where players changed the stake (%).
 * stake_change_size_overall: the average change in stake sizes in all rounds. A positive value indicates an increase in stake (euro).
 * stake_change_level_overall: the average change in stake levels in all rounds. A positive value indicates an increase in stake level.
-* stake_change_size: the average change in stake sizes when players did change the stake.
-* stake_change_level: the average change in stake levels when players did change the stake. 
+* stake_change_size: the average change in stake sizes when players did change the stake. In other words, rounds where players did not change the stake are excluded.
+* stake_change_level: the average change in stake levels when players did change the stake. In other words, rounds where players did not change the stake are excluded.
 
 ```{r stake_change}
 # get all the unique levels of bet sizes
@@ -441,6 +521,7 @@ bet_sizes <- sort(bet_sizes, decreasing = F)
 
 stake_change <- d %>%
   mutate(
+    # determine if the previous round is a win or a loss
     prev_outcome = ifelse(prev_win > 0, "win", "loss"),
     # create a new variable for stake level
     stake_level = factor(stake, levels = bet_sizes),
@@ -457,7 +538,7 @@ stake_change <- d %>%
   ungroup()
 
 # calculate the probability of changing stakes and the average change
-# in stake sizes and levels with all rounds
+# in stake sizes and stake levels with all rounds included
 stake_change_prop <- stake_change %>%
   group_by(group, id_player, prev_outcome) %>%
   summarize(
@@ -526,7 +607,7 @@ Players in total played `r before` rounds. `r before - after` rounds were exclud
 * group: the group to which a player belongs, High-Risk or Low-Risk.
 * id_player: the anonymous id of a player.
 * prev_outcome: the outcome on the previous trial, win (win amount > 0) or loss (win amount = 0).
-* n_round: the number of remaining rounds following a win or a loss.
+* n_round: the number of rounds following a win or a loss.
 * rt_mean: the mean response time (of putting in the first column) after a win or a loss, in milliseconds.
 * rt_z_mean: the mean of response time z score (of putting in the first column) after a win or a loss.
 
@@ -535,10 +616,12 @@ rt_data <- d_after %>%
   # calculate the following variables for each player
   group_by(group, id_player) %>%
   mutate(
+    # standardize the RT data within each player
     rt_z = scale(rt),
-    prev_outcome = ifelse(prev_win > 0, "win", "loss") # the outcome of the previous round
+    # determine whether a previous round is a win or a loss
+    prev_outcome = ifelse(prev_win > 0, "win", "loss")
   ) %>%
-  # for rounds following wins and losses, calculate the total number
+  # for rounds following wins and losses, calculate the total round number
   # and the mean RTs (raw scores as well as z scores)
   group_by(group, id_player, prev_outcome) %>%
   summarize(

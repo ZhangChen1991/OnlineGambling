@@ -12,7 +12,7 @@ link-citations: yes
 
 # Introduction
 
-In this file, we provide all code used to process and analyze data.
+In this file, we provide all code used analyze the summary data. Raw data files are not used in this analysis.
 
 ```{r resources, include=FALSE}
 library(knitr)
